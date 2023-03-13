@@ -32,7 +32,7 @@ The author is not responsible for any damage or loss caused by the use of the in
 
 This blog post focuses on analyzing the bitumen production data from in-situ oilsands projects in Alberta. Alberta Energy Regulator (AER) lists the monthly injection and production data for all in-situ oilsands projects in Alberta on its website [Alberta Energy Regulator](https://www.aer.ca/). The data is available in several spreadsheets and can be downloaded from [ST53: Alberta In Situ Oil Sands Production Summary](https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53). The annual data are reported in separate files in .xls format. Each file has 6 different sheets with the following information: bitumen production, water usage, steam injection, well count, steam-to-oil ratio (SOR), and water-to-oil ratio (WSR).
 
-In the previous post [Downloading Alberta Oilsands Production Data using Python](), I have shown how to download the data using python. In this post we create a tidy bitumen dataset for data analysis and visualization.
+In the previous post [Alberta In-situ Oilsands Production Analysis using Python - Part I](https://farshadtabasi.github.io/entropy.github.io/posts/python-posts/Oilsands%20Data%20Analysis%20Part%20I/), I have shown how to download the data using python. In this post we create a tidy bitumen dataset for data analysis and visualization.
 
 # Loading the Data
 
