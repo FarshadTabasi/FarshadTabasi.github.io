@@ -6,7 +6,7 @@ date: "2023-03-11"
 # date-modified: "2021-03-11"
 toc: true
 draft: false
-categories: [julia, thermal recovery, steam properties, SteamTable.jl]
+categories: [julia, thermal recovery, steam properties, SteamTables.jl]
 image: "steam_enthalpy.svg"
 execute: 
   cache: false
@@ -29,7 +29,7 @@ This blog post is for educational purposes only. Any commercial use of the infor
 
 # Introduction
 
-In this post we will use Julia `SteamTable.jl` package to estimate water and steam properties. The `SteamTable.jl` package is a Julia implementation of IAPWS-IF97 formulation.
+In this post we will use Julia `SteamTables.jl` package to estimate water and steam properties. The `SteamTables.jl` package is a Julia implementation of IAPWS-IF97 formulation.
 
 # Loading required packages
 
