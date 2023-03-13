@@ -1,0 +1,71 @@
+---
+title: "Alberta In-situ Oilsands Production Analysis using Python - Part I"
+subtitle: "Data extraction from AER website"
+author: "Farshad Tabasinejad"
+date: "2023-02-26"
+# date-modified: "2021-01-01"
+toc: true
+draft: false
+categories: [python, web scraping]
+image: "Oilsands_monthly_production_2010.png"
+execute: 
+  cache: false
+  output: true
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    code-overflow: wrap
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-copy: hover
+    highlight: zenburn
+jupyter: python3
+---
+
+# Disclaimer
+
+The information provided in this blog post is for educational purposes only. Commercial use of this information is prohibited. For information on the copyright and permission to reproduce, please visit the AER Copyright and Disclaimer page at [AER Copyright and Disclaimer](https://www.aer.ca/copyright-disclaimer).
+
+The author assumes no responsibility for any damage or loss resulting from the use of the information provided in this blog post.
+
+# Introduction
+
+The Alberta Energy Regulator (AER) provides monthly injection and production data for all in-situ oilsands projects in Alberta on its website at [Alberta Energy Regulator](https://www.aer.ca/). The data is available in several spreadsheets and can be downloaded from the [ST53: Alberta In Situ Oil Sands Production Summary](https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53). The annual data is reported in separate files in **`.xls`** format. Each file contains six different sheets with information about bitumen, water, steam, wells, SOR, and WSR.
+
+# Downloading the data
+
+To download the data using Python, the `requests` and `BeautifulSoup` libraries are used. The following code downloads all the .xls files from the AER website and saves them in the current directory:
+
+```{python}
+import requests
+from bs4 import BeautifulSoup
+# get the html
+url = 'https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53'
+r = requests.get(url)
+data = r.text
+# parse the html
+soup = BeautifulSoup(data, 'html.parser')
+# find all the hyperlinks
+links = soup.findAll('a', href = True) 
+# get the list of xls files only
+xls_links = [link for link in links if link.get('href').endswith('xls')]
+# download the xls files and save them in the current directory
+for link in xls_links:
+    xls_url = link.get('href')
+    xls_name = xls_url.split('/')[-1]
+    xls = requests.get(xls_url)
+    with open(xls_name, 'wb') as f:
+        f.write(xls.content)
+```
+
+## Listing all the saved xls files
+
+```{python}
+import os
+# filter only .xls files
+xls_files = [file for file in os.listdir(os.getcwd()) if file.endswith('.xls')]
+xls_files
+```
+
+In the next post, I will show how to read the data from the .xls files and prepare the datasets for further analysis. This analysis will provide insights into the production trends and patterns of in-situ oilsands projects in Alberta.

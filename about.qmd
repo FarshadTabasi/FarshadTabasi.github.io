@@ -1,0 +1,44 @@
+---
+title: "About"
+image: images/hiking_photo.jpg
+about:
+  template: trestles
+  links:
+    - icon: mastodon
+      text: Mastodon
+      href: https://mastodon.social/@farshadtabasinejad@fosstodon.org
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/in/farshad-tabasinejad-phd-peng-b8442335
+    - icon: github
+      text: Github
+      href: https://github.com/FarshadTabasi
+
+---
+
+Welcome to my weblog! My name is Farshad, and I am excited to share my experiences and insights with you. With 20 years of experience in the petroleum industry and academia, I have worked on reservoir engineering aspects of oilsands and heavy oil reservoirs. I have also been involved in several reservoir modeling and geomechanics studies of unconventional oil and gas reservoirs. Currently, I work as a process analytics consultant in the energy industry, providing engineering and data science solutions to optimize production and maintenance costs of refineries and upgraders.
+
+When I am not working, you can often find me indulging in my passions for hiking, playing table tennis and squash, as well as volleyball and tennis. Additionally, I enjoy watching Real Madrid games as a die-hard Los Blancos fan. Despite my loyalty to Real Madrid, I cannot help but admire the unparalleled talent of Leo Messi (The GOAT), which makes life even more beautiful.
+
+## Areas of Expertise/Interest:
+
+- Computational Thermodynamics
+- Reservoir Characterization
+- Reservoir Simulation
+- Thermal Recovery
+- PTA/RTA
+- EOR of Unconventional Reservoirs
+- Hydraulic Fracturing Modeling and Simulation
+- DFIT and DFIT-Flowback Design and Analysis 
+- Process Analytics
+- Artificial Intelligence
+- Machine Learning
+
+## Education
+
+- Certificate in Proffesional Management (PEG) | University of Calgary | 2018
+- Certificate in Spanish Language and Culture | University of Calgary | 2016
+- PhD in Petroleum Engineering | University of Calgary | 2011
+- MEng in Reservoir Engineering | University of Calgary | 2006
+- MSc in Reservoir Engineering | Petroleum University of Technology | 2006
+- BSc in Reservoir Engineering | Petroleum University of Technology | 2003

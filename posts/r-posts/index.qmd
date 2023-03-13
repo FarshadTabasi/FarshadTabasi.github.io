@@ -1,0 +1,18 @@
+---
+title: "A review of dplyr package in R"
+author: "Farshad Tabasinejad"
+date: "2023-02-23"
+draft: true
+categories: [code, R, dplyr]
+image: "dplyr-180x180.png"
+---
+
+Welcome to my weblog, where I will be sharing my experiences and knowledge about the applications of Julia, R, and Python in the domains of petroleum and process engineering. My posts will cover a wide range of topics, including engineering modeling, data visualization, data analysis, and machine learning applications in the oil and gas industry. I hope that my readers will find my content informative and engaging.
+
+In my daily tasks as a petroleum and process engineer, I rely on R for its powerful machine learning capabilities. I have been using R for over 8 years and have contributed several petroleum engineering packages to the CRAN repository. I have also written several R packages for my own use. I am excited to share my knowledge of R and how it can be used in the oil and gas industry.
+
+Python is my preferred language for creating the infrastructure required for automated cloud-based data science studies. I use it for data wrangling, visualization, and deep learning modeling. I have been using Python for more than 4 years and have found it to be a versatile language that can handle a variety of tasks in the petroleum and process engineering fields.
+
+Julia is my new favorite language for all data science and scientific studies. I started using Julia in reservoir and geomechanics studies three years ago and have found it to be a very powerful language for scientific computing. Julia's speed and ease of use make it an excellent choice for engineering modeling and simulation tasks. I am excited to share my knowledge of Julia and how it can be used in the oil and gas industry.
+
+In summary, my goal is to share my experience and knowledge of Julia, R, and Python in the domains of petroleum and process engineering. I will be covering a range of topics, including engineering modeling, data visualization, data analysis, and machine learning applications. I hope that my posts will be informative and helpful for those interested in utilizing these languages for practical engineering applications.

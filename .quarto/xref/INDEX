@@ -1,0 +1,50 @@
+{
+  "index.qmd": {
+    "index.html": "b61d8d06"
+  },
+  "about.qmd": {
+    "about.html": "93571d64"
+  },
+  "posts/post-with-code/index.qmd": {
+    "index.html": "f84a78ef"
+  },
+  "posts/welcome/index.qmd": {
+    "index.html": "eb1b6566"
+  },
+  "posts/r-posts/index.qmd": {
+    "index.html": "7659bec8"
+  },
+  "posts/python-posts/index.qmd": {
+    "index.html": "fe57702b"
+  },
+  "posts/python-posts/Oilsands Data Extraction/index.qmd": {
+    "index.html": "7e6df8d5"
+  },
+  "posts/python-posts/Oilsands Data Analysis/index.qmd": {
+    "index.html": "d87694f7"
+  },
+  "posts/python-posts/Oilsands Data Extraction/index_copy.qmd": {
+    "index_copy.html": "117d6fb0"
+  },
+  "posts/python-posts/Oilsands Data Analysis Part I/index.qmd": {
+    "index.html": "e96229bd"
+  },
+  "posts/python-posts/Oilsands Data Analysis Part II/index.qmd": {
+    "index.html": "6e0941f9"
+  },
+  "posts/python-posts/Oilsands Data Analysis Part III/index.qmd": {
+    "index.html": "1bd1ae9c"
+  },
+  "posts/python-posts/WCSB Map/index.qmd": {
+    "index.html": "970878dd"
+  },
+  "posts/julia-posts/Thermal Recovery Part I/index.qmd": {
+    "index.html": "a1cabb31"
+  },
+  "posts/julia-posts/Thermal Recovery Part II/index.qmd": {
+    "index.html": "248a178f"
+  },
+  "posts/julia-posts/Thermal Recovery Part III/index.qmd": {
+    "index.html": "59d1f3fe"
+  }
+}

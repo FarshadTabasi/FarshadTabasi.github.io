@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Farshad Tabasinejad">
+<meta name="dcterms.date" content="2023-03-05">
+
+<title>Entropy - Alberta In-situ Oilsands Production Analysis using Python - Part III</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon/entropy_ai.png" rel="icon" type="image/png">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../../images/favicon/entropy_ai.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Entropy</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/FarshadTabasi"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://mastodon.social/@farshadtabasinejad@fosstodon.org"><i class="bi bi-mastodon" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link active" data-scroll-target="#disclaimer">Disclaimer</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#loading-the-data" id="toc-loading-the-data" class="nav-link" data-scroll-target="#loading-the-data">Loading the data</a></li>
+  <li><a href="#data-analysis-and-visualization" id="toc-data-analysis-and-visualization" class="nav-link" data-scroll-target="#data-analysis-and-visualization">Data analysis and visualization</a>
+  <ul class="collapse">
+  <li><a href="#alberta-average-bitumen-production-rate-per-year" id="toc-alberta-average-bitumen-production-rate-per-year" class="nav-link" data-scroll-target="#alberta-average-bitumen-production-rate-per-year">Alberta average bitumen production rate per year</a></li>
+  <li><a href="#largest-bitumen-producers-in-alberta-since-2010" id="toc-largest-bitumen-producers-in-alberta-since-2010" class="nav-link" data-scroll-target="#largest-bitumen-producers-in-alberta-since-2010">Largest bitumen producers in Alberta since 2010</a></li>
+  <li><a href="#largest-bitumen-producers-in-alberta-in-2022" id="toc-largest-bitumen-producers-in-alberta-in-2022" class="nav-link" data-scroll-target="#largest-bitumen-producers-in-alberta-in-2022">Largest bitumen producers in Alberta in 2022</a></li>
+  <li><a href="#largest-bitumen-producers-in-alberta-in-2022-by-area" id="toc-largest-bitumen-producers-in-alberta-in-2022-by-area" class="nav-link" data-scroll-target="#largest-bitumen-producers-in-alberta-in-2022-by-area">Largest bitumen producers in Alberta in 2022 by area</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Alberta In-situ Oilsands Production Analysis using Python - Part III</h1>
+<p class="subtitle lead">Data analysis and visualization</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">python</div>
+    <div class="quarto-category">data analysis</div>
+    <div class="quarto-category">data visualization</div>
+    <div class="quarto-category">pandas</div>
+    <div class="quarto-category">seaborn</div>
+    <div class="quarto-category">matplotlib</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Farshad Tabasinejad </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 5, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="disclaimer" class="level1">
+<h1>Disclaimer</h1>
+<p>This blog post is for educational purposes only. Any commercial use of the information provided in this blog post is prohibited. For more information about the AER copyright and permission to reproduce, please visit <a href="https://www.aer.ca/copyright-disclaimer">AER Copyright and Disclaimer</a>. The author is not responsible for any damage or loss caused by the use of the information provided in this blog post.</p>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Alberta Energy Regulator (AER) lists the monthly injection and production data for all in-situ oilsands projects in Alberta on its website <a href="https://www.aer.ca/">Alberta Energy Regulator</a>. The data is available in several spreadsheets and can be downloaded from <a href="https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53">ST53: Alberta In Situ Oil Sands Production Summary</a>. The annual data are reported in separate files in <strong><code>.xls</code></strong> format. Each file has 6 different sheets with information about bitumen, water, steam, wells, SOR, and WSR.</p>
+<p>To learn how to download and prepare the tidy dataset in <code>.csv</code> format, please refered to the previous posts <a href="">Downloading Alberta Oilsands Production Data using Python</a> and <a href="">Alberta In-situ Oilsands Production Analysis using Python - Part I</a>. In this post we use the tidy <code>bitumen.csv</code> file for data analysis and visualization.</p>
+</section>
+<section id="loading-the-data" class="level1">
+<h1>Loading the data</h1>
+<p>All files are stored in the current local directory. We use the <code>glob</code> module to list all <code>.csv</code> files in the directory and then use <code>pandas</code> to read the data into a <code>DataFrame</code>. The <code>matplotlib</code> and <code>seaborn</code> modules are used to create the plots.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>glob</code> module is used to list all <code>.csv</code> files in the directory, which we can then read into a DataFrame using pandas.</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>csv_files <span class="op">=</span> glob.glob(<span class="st">'*.csv'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>csv_files</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>['bitumen.csv']</code></pre>
+</div>
+</div>
+<p>The <code>bitumen.csv</code> file is loaded into a dataframe using the <code>read_csv</code> function from the pandas module.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bitumen <span class="op">=</span> pd.read_csv(<span class="st">"bitumen.csv"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bitumen.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Operator</th>
+      <th>Scheme Name</th>
+      <th>Area</th>
+      <th>Approval Number</th>
+      <th>Recovery Method</th>
+      <th>Jan</th>
+      <th>Feb</th>
+      <th>Mar</th>
+      <th>Apr</th>
+      <th>May</th>
+      <th>Jun</th>
+      <th>Jul</th>
+      <th>Aug</th>
+      <th>Sep</th>
+      <th>Oct</th>
+      <th>Nov</th>
+      <th>Dec</th>
+      <th>Year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CNRL</td>
+      <td>NaN</td>
+      <td>Cold Lake</td>
+      <td>4746P</td>
+      <td>Commercial</td>
+      <td>587.48</td>
+      <td>596.72</td>
+      <td>637.59</td>
+      <td>678.74</td>
+      <td>705.61</td>
+      <td>718.99</td>
+      <td>697.25</td>
+      <td>696.88</td>
+      <td>763.21</td>
+      <td>702.21</td>
+      <td>696.32</td>
+      <td>674.99</td>
+      <td>2010</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CNRL</td>
+      <td>NaN</td>
+      <td>Cold Lake</td>
+      <td>6726I</td>
+      <td>Commercial</td>
+      <td>171.54</td>
+      <td>193.66</td>
+      <td>187.71</td>
+      <td>177.54</td>
+      <td>176.90</td>
+      <td>174.50</td>
+      <td>160.53</td>
+      <td>155.97</td>
+      <td>168.22</td>
+      <td>168.27</td>
+      <td>139.73</td>
+      <td>143.48</td>
+      <td>2010</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Baytex</td>
+      <td>Cliffdale Pilot</td>
+      <td>Peace River</td>
+      <td>11034E</td>
+      <td>Commercial-CSS</td>
+      <td>0.00</td>
+      <td>2.55</td>
+      <td>6.15</td>
+      <td>2.25</td>
+      <td>4.16</td>
+      <td>10.59</td>
+      <td>5.83</td>
+      <td>3.27</td>
+      <td>9.18</td>
+      <td>20.09</td>
+      <td>15.42</td>
+      <td>13.15</td>
+      <td>2010</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>North Peace Energy Corp.</td>
+      <td>Red Earth</td>
+      <td>Peace River</td>
+      <td>11209A</td>
+      <td>Commercial-CSS</td>
+      <td>10.30</td>
+      <td>4.70</td>
+      <td>3.11</td>
+      <td>2.21</td>
+      <td>1.63</td>
+      <td>0.51</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.40</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>2010</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Penn West</td>
+      <td>Seal</td>
+      <td>Peace River</td>
+      <td>11377A</td>
+      <td>Commercial-CSS</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>0.00</td>
+      <td>2010</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="data-analysis-and-visualization" class="level1">
+<h1>Data analysis and visualization</h1>
+<section id="alberta-average-bitumen-production-rate-per-year" class="level2">
+<h2 class="anchored" data-anchor-id="alberta-average-bitumen-production-rate-per-year">Alberta average bitumen production rate per year</h2>
+<p>The daily bitumen production rate is reported as a monthly average in m3/day. An approximation of the yearly average production rate in m3/day is calculated by taking the average of the monthly average production rates. The yearly average production rate is then converted to Mm3/day by dividing it by 1,000.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the average daily production rate for each year</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>bitumen_agg <span class="op">=</span> (bitumen</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>              .assign(Production_Rate <span class="op">=</span> <span class="kw">lambda</span> x: x.loc[:,<span class="st">"Jan"</span>:<span class="st">"Dec"</span>].mean(axis <span class="op">=</span> <span class="dv">1</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>              .drop(columns <span class="op">=</span> [<span class="st">'Jan'</span>, <span class="st">'Feb'</span>, <span class="st">'Mar'</span>, <span class="st">'Apr'</span>, <span class="st">'May'</span>, <span class="st">'Jun'</span>, <span class="st">'Jul'</span>, <span class="st">'Aug'</span>, <span class="st">'Sep'</span>, <span class="st">'Oct'</span>, <span class="st">'Nov'</span>, <span class="st">'Dec'</span>])</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>              .groupby([<span class="st">'Year'</span>])</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>              .<span class="bu">sum</span>()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>              .div(<span class="dv">1000</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>              .reset_index()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>bitumen_agg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Year</th>
+      <th>Production_Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2010</td>
+      <td>119.596470</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2011</td>
+      <td>134.691030</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2012</td>
+      <td>157.040421</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2013</td>
+      <td>175.839908</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2014</td>
+      <td>200.679804</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2016</td>
+      <td>220.765067</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2017</td>
+      <td>245.572865</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2018</td>
+      <td>249.694999</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2019</td>
+      <td>245.745934</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2020</td>
+      <td>237.340961</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2021</td>
+      <td>264.391272</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2022</td>
+      <td>269.899715</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Let’s see the yearly average production rate in Mm3/day.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the yearly average production rate</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sns.barplot(x <span class="op">=</span> <span class="st">'Year'</span>, y <span class="op">=</span> <span class="st">'Production_Rate'</span>, data <span class="op">=</span> bitumen_agg)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Alberta average bitumen production rate'</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Year'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Production Rate (Mm3/day)'</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-6-output-1.png" width="668" height="515"></p>
+</div>
+</div>
+</section>
+<section id="largest-bitumen-producers-in-alberta-since-2010" class="level2">
+<h2 class="anchored" data-anchor-id="largest-bitumen-producers-in-alberta-since-2010">Largest bitumen producers in Alberta since 2010</h2>
+<p>The top 10 largest bitumen producers in Alberta since 2010 are listed below. The data is sorted by the total bitumen production in descending order. The total bitumen production rate is converted to MMm3/day by dividing by 1,000,000.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the total bitumen production rate for each operator</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>bitumen_agg <span class="op">=</span> (bitumen</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>              .assign(Cumulative_Production <span class="op">=</span> <span class="kw">lambda</span> x: x.loc[:,<span class="st">"Jan"</span>:<span class="st">"Dec"</span>].<span class="bu">sum</span>(axis <span class="op">=</span> <span class="dv">1</span>) <span class="op">*</span> <span class="dv">365</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>              .drop(columns <span class="op">=</span> [<span class="st">'Jan'</span>, <span class="st">'Feb'</span>, <span class="st">'Mar'</span>, <span class="st">'Apr'</span>, <span class="st">'May'</span>, <span class="st">'Jun'</span>, <span class="st">'Jul'</span>, <span class="st">'Aug'</span>, <span class="st">'Sep'</span>, <span class="st">'Oct'</span>, <span class="st">'Nov'</span>, <span class="st">'Dec'</span>, <span class="st">'Year'</span>])</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>              .groupby([<span class="st">'Operator'</span>])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>              .<span class="bu">sum</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>              .div(<span class="dv">1_000_000</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>              .sort_values(by <span class="op">=</span> <span class="st">'Cumulative_Production'</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>              .reset_index()</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>              .head(<span class="dv">10</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>bitumen_agg </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Operator</th>
+      <th>Cumulative_Production</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Cenovus</td>
+      <td>2561.630674</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CNRL</td>
+      <td>2266.675729</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Suncor</td>
+      <td>1550.949426</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Imperial</td>
+      <td>1249.998787</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ConocoPhillips</td>
+      <td>668.101066</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Devon</td>
+      <td>533.488187</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MEG</td>
+      <td>531.186018</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Husky</td>
+      <td>359.571866</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Nexen</td>
+      <td>157.297422</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>CNOOC</td>
+      <td>146.821801</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>The figure below illustrates the top 10 largest bitumen producers in Alberta since 2010.</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the top 10 largest bitumen producers in Alberta since 2010</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>sns.barplot(x <span class="op">=</span> <span class="st">'Cumulative_Production'</span>, y <span class="op">=</span> <span class="st">'Operator'</span>, data <span class="op">=</span> bitumen_agg)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 10 largest bitumen producers in Alberta since 2010'</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Cumulative Production (MMm3)'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Operator'</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-8-output-1.png" width="738" height="515"></p>
+</div>
+</div>
+</section>
+<section id="largest-bitumen-producers-in-alberta-in-2022" class="level2">
+<h2 class="anchored" data-anchor-id="largest-bitumen-producers-in-alberta-in-2022">Largest bitumen producers in Alberta in 2022</h2>
+<p>The top 10 largest bitumen producers in Alberta in 2022 are listed below. The data is sorted by the bitumen production rate in descending order. The yearly bitumen production rate is converted to Mm3/day by dividing by 1,000.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the yearly bitumen production rate for each operator</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>bitumen_agg <span class="op">=</span> (bitumen</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>              .query(<span class="st">"Year == 2022"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>              .assign(Production_Rate <span class="op">=</span> <span class="kw">lambda</span> x: x.loc[:,<span class="st">"Jan"</span>:<span class="st">"Dec"</span>].mean(axis <span class="op">=</span> <span class="dv">1</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>              .drop(columns <span class="op">=</span> [<span class="st">'Jan'</span>, <span class="st">'Feb'</span>, <span class="st">'Mar'</span>, <span class="st">'Apr'</span>, <span class="st">'May'</span>, <span class="st">'Jun'</span>, <span class="st">'Jul'</span>, <span class="st">'Aug'</span>, <span class="st">'Sep'</span>, <span class="st">'Oct'</span>, <span class="st">'Nov'</span>, <span class="st">'Dec'</span>, <span class="st">'Year'</span>])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>              .groupby([<span class="st">'Operator'</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>              .<span class="bu">sum</span>()</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>              .div(<span class="dv">1000</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>              .sort_values(by <span class="op">=</span> <span class="st">'Production_Rate'</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>              .reset_index()</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>              .head(<span class="dv">10</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>bitumen_agg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Operator</th>
+      <th>Production_Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Cenovus</td>
+      <td>76.725747</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>CNRL</td>
+      <td>55.968093</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Suncor</td>
+      <td>36.721742</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Imperial</td>
+      <td>23.121582</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ConocoPhillips</td>
+      <td>22.142553</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>MEG</td>
+      <td>14.758539</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Strathcona</td>
+      <td>7.995144</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>CNOOC</td>
+      <td>7.562969</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Athabasca Oil</td>
+      <td>4.610921</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Greenfire</td>
+      <td>4.151495</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>The top 10 largest bitumen producers in Alberta in 2022 are shown in the plot below.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the top 10 largest bitumen producers in Alberta in 2022</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>sns.barplot(x <span class="op">=</span> <span class="st">'Production_Rate'</span>, y <span class="op">=</span> <span class="st">'Operator'</span>, data <span class="op">=</span> bitumen_agg)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 10 largest bitumen producers in Alberta in 2022'</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Production Rate (Mm3/day)'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Operator'</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-10-output-1.png" width="742" height="515"></p>
+</div>
+</div>
+</section>
+<section id="largest-bitumen-producers-in-alberta-in-2022-by-area" class="level2">
+<h2 class="anchored" data-anchor-id="largest-bitumen-producers-in-alberta-in-2022-by-area">Largest bitumen producers in Alberta in 2022 by area</h2>
+<p>The top 5 largest 2022 bitumen producers by area in Alberta are listed below. The data is sorted by the bitumen production rate in descending order. The yearly bitumen production rate is converted to Mm3/day by dividing by 1,000.</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the yearly bitumen production rate for each operator by area</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>bitumen_agg <span class="op">=</span> (bitumen</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>              .query(<span class="st">"Year == 2022"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>              .assign(Production_Rate <span class="op">=</span> <span class="kw">lambda</span> x: x.loc[:,<span class="st">"Jan"</span>:<span class="st">"Dec"</span>].mean(axis <span class="op">=</span> <span class="dv">1</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>              .drop(columns <span class="op">=</span> [<span class="st">'Jan'</span>, <span class="st">'Feb'</span>, <span class="st">'Mar'</span>, <span class="st">'Apr'</span>, <span class="st">'May'</span>, <span class="st">'Jun'</span>, <span class="st">'Jul'</span>, <span class="st">'Aug'</span>, <span class="st">'Sep'</span>, <span class="st">'Oct'</span>, <span class="st">'Nov'</span>, <span class="st">'Dec'</span>, <span class="st">'Year'</span>])</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>              .groupby([<span class="st">'Area'</span>, <span class="st">'Operator'</span>])</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>              .<span class="bu">sum</span>()</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>              .div(<span class="dv">1000</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>              .sort_values(by <span class="op">=</span> <span class="st">'Production_Rate'</span>, ascending <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>              .groupby(<span class="st">'Area'</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>              .head(<span class="dv">5</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>              .reset_index()</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>bitumen_agg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Area</th>
+      <th>Operator</th>
+      <th>Production_Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Athabasca</td>
+      <td>Cenovus</td>
+      <td>76.565583</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Athabasca</td>
+      <td>CNRL</td>
+      <td>36.756985</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Athabasca</td>
+      <td>Suncor</td>
+      <td>36.721742</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Cold Lake</td>
+      <td>Imperial</td>
+      <td>23.121582</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Athabasca</td>
+      <td>ConocoPhillips</td>
+      <td>22.142553</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Cold Lake</td>
+      <td>CNRL</td>
+      <td>17.712652</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Athabasca</td>
+      <td>MEG</td>
+      <td>14.758539</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Cold Lake</td>
+      <td>Strathcona</td>
+      <td>7.995144</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Peace River</td>
+      <td>Baytex</td>
+      <td>2.889908</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Peace River</td>
+      <td>CNRL</td>
+      <td>1.498456</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Peace River</td>
+      <td>Obsidian</td>
+      <td>0.889067</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Cold Lake</td>
+      <td>Baytex</td>
+      <td>0.308280</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Peace River</td>
+      <td>Islander</td>
+      <td>0.273017</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Cold Lake</td>
+      <td>Cenovus</td>
+      <td>0.160163</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Peace River</td>
+      <td>Woodcote</td>
+      <td>0.031730</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>The figure below shows the top 5 largest bitumen producers in Alberta in 2022 by area.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">1</span>, figsize <span class="op">=</span> (<span class="dv">6</span>, <span class="dv">15</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, area <span class="kw">in</span> <span class="bu">enumerate</span>(bitumen_agg[<span class="st">'Area'</span>].unique()):</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    sns.barplot(x <span class="op">=</span> <span class="st">'Production_Rate'</span>, y <span class="op">=</span> <span class="st">'Operator'</span>, data <span class="op">=</span> bitumen_agg.query(<span class="st">"Area == @area"</span>), ax <span class="op">=</span> ax[i])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    ax[i].set_title(area)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    ax[i].set_xlabel(<span class="st">'Production Rate (Mm3/day)'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    ax[i].set_ylabel(<span class="st">'Operator'</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>fig.subplots_adjust(top <span class="op">=</span> <span class="fl">0.95</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="index_files/figure-html/cell-12-output-1.png" width="596" height="1268"></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Farshad Tabasinejad">
+<meta name="dcterms.date" content="2023-03-12">
+
+<title>Entropy - Thermal Recovery - Part II</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../images/favicon/entropy_ai.png" rel="icon" type="image/png">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../../images/favicon/entropy_ai.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Entropy</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/FarshadTabasi"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://mastodon.social/@farshadtabasinejad@fosstodon.org"><i class="bi bi-mastodon" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link active" data-scroll-target="#disclaimer">Disclaimer</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#d-heat-conduction-equation" id="toc-d-heat-conduction-equation" class="nav-link" data-scroll-target="#d-heat-conduction-equation">1-D heat conduction equation</a></li>
+  <li><a href="#loading-required-packages" id="toc-loading-required-packages" class="nav-link" data-scroll-target="#loading-required-packages">Loading required packages</a></li>
+  <li><a href="#solving-the-heat-conduction-equation" id="toc-solving-the-heat-conduction-equation" class="nav-link" data-scroll-target="#solving-the-heat-conduction-equation">Solving the heat conduction equation</a></li>
+  <li><a href="#heat-loss-to-overburden" id="toc-heat-loss-to-overburden" class="nav-link" data-scroll-target="#heat-loss-to-overburden">Heat loss to overburden</a>
+  <ul class="collapse">
+  <li><a href="#heat-conduction-from-a-constant-surface-area" id="toc-heat-conduction-from-a-constant-surface-area" class="nav-link" data-scroll-target="#heat-conduction-from-a-constant-surface-area">1.0 Heat conduction from a constant surface area</a></li>
+  <li><a href="#surface-area-increases-with-time-heat-transfer-from-a-spreading-hot-zone" id="toc-surface-area-increases-with-time-heat-transfer-from-a-spreading-hot-zone" class="nav-link" data-scroll-target="#surface-area-increases-with-time-heat-transfer-from-a-spreading-hot-zone">2. Surface area increases with time (Heat transfer from a spreading hot zone)</a></li>
+  <li><a href="#surface-area-increases-to-a-limit-and-then-stops-expanding" id="toc-surface-area-increases-to-a-limit-and-then-stops-expanding" class="nav-link" data-scroll-target="#surface-area-increases-to-a-limit-and-then-stops-expanding">3. Surface area increases to a limit and then stops expanding</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Thermal Recovery - Part II</h1>
+<p class="subtitle lead">Heat Conduction in a 1D Reservoir</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">julia</div>
+    <div class="quarto-category">thermal recovery</div>
+    <div class="quarto-category">heat conduction</div>
+    <div class="quarto-category">heat loss</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Farshad Tabasinejad </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 12, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="disclaimer" class="level1">
+<h1>Disclaimer</h1>
+<p>This blog post is for educational purposes only. Any commercial use of the information provided in this blog post is prohibited. The author is not responsible for any damage or loss caused by the use of the information provided in this blog post.</p>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Thermal operations, also known as thermal enhanced oil recovery (EOR), are techniques used to increase the production of heavy oil and bitumen by injecting steam or other high-temperature fluids into the reservoir. The injected fluid heats the reservoir and reduces the viscosity of the heavy oil, making it easier to flow through the reservoir and towards the production well.</p>
+<p>However, one of the major challenges of thermal operations is the significant heat loss to the surrounding overburden, which can lead to decreased efficiency and increased costs. Heat loss occurs as the hot steam or fluid travels through the reservoir and comes into contact with the cooler overburden, resulting in heat transfer between the reservoir and overburden.</p>
+<p>To optimize thermal operations and minimize heat loss, it is important to understand the dynamics of heat transfer between the reservoir and overburden. This can be achieved through the use of mathematical models and simulations, which can help predict the temperature distribution in the reservoir and overburden, and optimize the injection and production rates.</p>
+<p>In this post we will use the <code>Julia</code> programming language to solve the heat loss to overburden in thermal operations. This problem is solved as a 1D heat conduction into overburden. Heat transfer is assumed to occur at the reservoir/overburden boundary. The overburden is considered as a semi-infinite homogenous reservoir.</p>
+<p>Three different scanrios will be discussed in this post:</p>
+<ol type="1">
+<li>Heat conduction through a constant surface area</li>
+<li>Heat conduction from an spreading hot zone within a semi-infinite 1-D reservoir</li>
+<li>Heat conduction from an spreading hot zone within a confined 1-D reservoir</li>
+</ol>
+<p>These models are explained in detail in <span class="citation" data-cites="Butler1997">(<a href="#ref-Butler1997" role="doc-biblioref">Butler 1997</a>)</span>.</p>
+</section>
+<section id="d-heat-conduction-equation" class="level1">
+<h1>1-D heat conduction equation</h1>
+<p>The 1-D heat conduction equation is given by:</p>
+<p><span class="math display">\[\frac{\partial T}{\partial t} = \frac{\partial}{\partial x} \left( \alpha \frac{\partial T}{\partial x} \right)\]</span></p>
+<p>where <span class="math inline">\(T\)</span> is the temperature, <span class="math inline">\(t\)</span> is time, <span class="math inline">\(x\)</span> is the distance from the steam interface, and <span class="math inline">\(\alpha\)</span> is the thermal diffusivity. For a semi-infinite medium, the boundary conditions are given by:</p>
+<p><span class="math display">\[T(x = 0,t) = T_{steam}\]</span></p>
+<p><span class="math display">\[T(x = \infty,t) = T_{overburden}\]</span></p>
+<p>and the initial condition is given by:</p>
+<p><span class="math display">\[T(x ,t = 0) = T_{overburden}\]</span></p>
+<p>The thermal diffusivity is assumed to be a constant. The analytical solution of this problem is given by:</p>
+<p><span id="eq-1"><span class="math display">\[T(x,t) = T_{reservoir} + ({T_{steam} - T_{reservoir}}) * erfc(\frac{x}{2 \sqrt{\alpha t}}) \tag{1}\]</span></span></p>
+<p>where <code>erfc</code> is the complementary error function. The complementary error function is defined as:</p>
+<p><span class="math display">\[erfc(x) = 1 - erf(x)\]</span></p>
+<p>where <code>erf</code> is the error function and is defined as:</p>
+<p><span class="math display">\[erf(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt\]</span></p>
+</section>
+<section id="loading-required-packages" class="level1">
+<h1>Loading required packages</h1>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">ShiftedArrays</span>: lag</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">SpecialFunctions</span>: erf, erfc</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Plots</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">StatsPlots </span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">SteamTables</span>: Tsat, SatHL, SatHV, SpecificH</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="solving-the-heat-conduction-equation" class="level1">
+<h1>Solving the heat conduction equation</h1>
+<p>For the rest of the post, we will use the following assumptions for the overburden thermal conductivity, overburden thermal diffusivity, steam temperature, and overburden temperature.</p>
+<ul>
+<li>Thermal conductivity: <code>K = 1.7 W/m/°C"</code></li>
+<li>Thermal diffusivity: <code>α = 8.333e-7 m^2/s</code></li>
+<li>Steam temperature: <code>Ts = 264 °C</code></li>
+<li>Overburden temperature: <code>To = 15 °C</code></li>
+</ul>
+<p>These assumptions will be used to solve the 1-D heat conduction equation using Julia. We will start by defining the required parameters and functions.</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># thermal conductivity (J/day/m/°C)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="fl">1.7</span> <span class="op">*</span> <span class="fl">86400</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># thermal diffusivity (m^2/day)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>α <span class="op">=</span> <span class="fl">8.333e-7</span> <span class="op">*</span> <span class="fl">86400</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># steam temperature (°C)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Ts <span class="op">=</span> <span class="fl">264.0</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># overburden temperature (°C)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>To <span class="op">=</span> <span class="fl">15.0</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># distance from the boundary (m)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">20</span>, length <span class="op">=</span> <span class="fl">10000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here’s a Julia function that implements the analytical solution for <a href="#eq-1">Equation&nbsp;1</a>:</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">solve_heat_conduction_equation</span>(Ts, To, α, x, t)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> To <span class="op">.+</span> (Ts <span class="op">.-</span> To) <span class="op">.*</span> <span class="fu">erfc</span>.(x <span class="op">./</span> (<span class="fl">2</span> <span class="op">.*</span> <span class="fu">sqrt</span>.(α <span class="op">.*</span> t)))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x, T</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The solution of <a href="#eq-1">Equation&nbsp;1</a> at different times is shown below.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> [<span class="fl">0.01</span>, <span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>, <span class="fl">4.0</span>] <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> <span class="fu">DataFrame</span>(x <span class="op">=</span> [], T <span class="op">=</span> [], t <span class="op">=</span> [])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu">length</span>(t)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    x, T <span class="op">=</span> <span class="fu">solve_heat_conduction_equation</span>(Ts, To, α, x, t[i])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> <span class="fu">vcat</span>(df, <span class="fu">DataFrame</span>(x <span class="op">=</span> x, T <span class="op">=</span> T, t <span class="op">=</span> t[i]))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df <span class="fu">plot</span>(<span class="op">:</span>x, <span class="op">:</span>T, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>group <span class="op">=</span> <span class="op">:</span>t, </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Distance from the boundary (m)"</span>, </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Temperature (°C)"</span>, </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">reshape</span>(<span class="fu">string</span>.(<span class="st">"t = "</span>, <span class="fu">string</span>.([<span class="fl">3.65</span>, <span class="fl">365</span>, <span class="fl">730</span>, <span class="fl">1095</span>, <span class="fl">1460</span>]), <span class="st">" days"</span>), <span class="op">:</span>, <span class="fl">5</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<p><img src="index_files/figure-html/cell-5-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="heat-loss-to-overburden" class="level1">
+<h1>Heat loss to overburden</h1>
+<section id="heat-conduction-from-a-constant-surface-area" class="level2">
+<h2 class="anchored" data-anchor-id="heat-conduction-from-a-constant-surface-area">1.0 Heat conduction from a constant surface area</h2>
+<p>The rate of heat loss to overburden at the reservoir/overburden interface over a constant surface area (A) is given by:</p>
+<p><span id="eq-2"><span class="math display">\[q = - K \cdot A (\frac{\partial T}{\partial x})_{x=0} \tag{2}\]</span></span></p>
+<p>where <code>K</code> is the thermal conductivity, <code>T</code> is the temperature, and <code>x</code> is the distance from the boundary. The cumulative heat loss to overburden is given by:</p>
+<p><span id="eq-3"><span class="math display">\[Q_{c} = \int_0^t - K \cdot A (\frac{\partial T}{\partial x})_{_{x=0}} dt \tag{3}\]</span></span></p>
+<p>where <span class="math inline">\(t\)</span> is time. Using the temperature profile given in <a href="#eq-1">Equation&nbsp;1</a>, we can calculate the cumulative heat loss to overburden as:</p>
+<p><span class="math display">\[Q_{c} = 2 (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{t}{\pi \alpha}}\]</span></p>
+<p>The following function is defined to calculate the cumulative heat loss to overburden.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_loss_constant_area</span>(Ts, To, α, K, A, t)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    Q <span class="op">=</span> <span class="fl">2.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A <span class="op">*</span> <span class="fu">sqrt</span>.(t <span class="op">./</span> (<span class="cn">π</span> <span class="op">.*</span> α))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Q</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For a reservoir/overburden interface with a constant surface area of 40,000 <span class="math inline">\(\mathrm m^2\)</span>, the cumulative heat loss to overburden over 10 years is estimated as follows.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span><span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fl">40000.0</span> <span class="co"># m^2</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> <span class="fu">cumulative_heat_loss_constant_area</span>(Ts, To, α, K, A, t) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df_Q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, Q <span class="op">=</span> Q)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>Q, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Heat loss to overburden (MJoules)"</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"Area = 40000 m^2"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topleft,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<p><img src="index_files/figure-html/cell-7-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The rate of heat loss to overburden at the reservoir/overburden interface over a constant surface area (A) can be calculated by combining <a href="#eq-1">Equation&nbsp;1</a> and <a href="#eq-2">Equation&nbsp;2</a>:</p>
+<p><span class="math display">\[q = (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{1}{\pi \alpha t}}\]</span></p>
+<p>Here’s the implementation of the function that calculates the rate of heat loss to overburden using the equation mentioned above:</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">heat_rate_constant_area</span>(Ts, To, α, K, A, t)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A <span class="op">./</span> <span class="fu">sqrt</span>.(<span class="cn">π</span> <span class="op">*</span> α <span class="op">.*</span> t)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The rate of heat loss to overburden over 10 years is plotted below.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span><span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fl">40000.0</span> <span class="co"># m^2</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fu">heat_rate_constant_area</span>(Ts, To, α, K, A, t) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ/day</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df_q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, q <span class="op">=</span> q)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>q, </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Rate of heat loss to overburden (MJoules/day)"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"Area = 40000 m^2"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+<p><img src="index_files/figure-html/cell-9-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The annual heat loss to overburden can be calculated as follows:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_Q_sub <span class="op">=</span> df_Q[df_Q.year <span class="op">.==</span> <span class="fu">round</span>.(df_Q.year, digits <span class="op">=</span> <span class="fl">0</span>), <span class="op">:</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_lag] <span class="op">=</span> <span class="fu">lag</span>(df_Q_sub.Q, <span class="fl">1</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_incremental] <span class="op">=</span> df_Q_sub.Q <span class="op">-</span> df_Q_sub.Q_lag</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>Q_incremental, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Heat loss to overburden (MJoules)"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Annual Heat Loss To Overburden"</span>, </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A = 40_000 m^2"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<p><img src="index_files/figure-html/cell-10-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>Assuming an injection pressure of 5.0 MPa and a steam quality of 70%, and assuming that the condensate is produced at an average temperature of <span class="math inline">\(\mathrm T_{o} + 0.75 * (T_{s} - T_{o})\)</span>, the annual steam requirement needed to compensate for the heat loss to overburden can be estimated as follows:</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> <span class="fl">5.0</span> <span class="co"># MPa</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="fl">0.7</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>T_sat <span class="op">=</span> <span class="fu">Tsat</span>(P) <span class="co"># K</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>H_vap <span class="op">=</span> <span class="fu">SatHV</span>(T_sat) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ/kg</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>H_liq <span class="op">=</span> <span class="fu">SatHL</span>(T_sat) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ/kg</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>H_wetsteam <span class="op">=</span> (<span class="fl">1</span> <span class="op">-</span> x) <span class="op">*</span> H_liq <span class="op">+</span> x <span class="op">*</span> H_vap <span class="co"># MJ/kg</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>T_cond <span class="op">=</span> To <span class="op">+</span> <span class="fl">0.75</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="co"># C</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>H_cond <span class="op">=</span> <span class="fu">SpecificH</span>(P, T_cond <span class="op">+</span> <span class="fl">273.15</span>) <span class="op">/</span> <span class="fl">1e3</span> <span class="co"># MJ/kg</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>net_heat_per_tonne_of_steam <span class="op">=</span> (H_wetsteam <span class="op">-</span> H_cond) <span class="op">*</span> <span class="fl">1000</span>; <span class="co"># MJ/tonne</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>steam_requirement] <span class="op">=</span> df_Q_sub.Q_incremental <span class="op">./</span> </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                                    net_heat_per_tonne_of_steam</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>steam_requirement,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Steam requirement (tonnes)"</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Annual Steam Requirement"</span>,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A = 40_000 m^2"</span>,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<p><img src="index_files/figure-html/cell-11-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="surface-area-increases-with-time-heat-transfer-from-a-spreading-hot-zone" class="level2">
+<h2 class="anchored" data-anchor-id="surface-area-increases-with-time-heat-transfer-from-a-spreading-hot-zone">2. Surface area increases with time (Heat transfer from a spreading hot zone)</h2>
+<p>In this scenario, heat is transferred to the overburden from a hot zone that expands over time. <span class="citation" data-cites="Butler1997">(<a href="#ref-Butler1997" role="doc-biblioref">Butler 1997</a>)</span> has provided a general solution for this problem when the surface area of the hot zone increases as a power of time. When the surface area of the hot zone increases linearly with time, the cumulative and rate of heat loss to overburden are given by <a href="#eq-4">Equation&nbsp;4</a> and <a href="#eq-5">Equation&nbsp;5</a>, respectively.</p>
+<p><span id="eq-4"><span class="math display">\[Q = \frac{4}{3} \frac{(T_{s} - T_{o}) K \cdot \dot{A}}{\sqrt{\pi \alpha}} t^{1.5}  \tag{4}\]</span></span></p>
+<p><span id="eq-5"><span class="math display">\[q = 2 (T_{s} - T_{o}) K \cdot \dot{A} \cdot \sqrt{\frac{t}{\pi \alpha}}  \tag{5}\]</span></span></p>
+<p>where <span class="math inline">\(\dot{A}\)</span> is the rate of change of surface area and is assumed to be constant.</p>
+<p>Similar to the previous case, we define two functions that calculate the cumulative heat loss and rate of heat loss to overburden.</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_loss_variable_area</span>(Ts, To, α, K, A_dot, t)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    Q <span class="op">=</span> <span class="fl">4.0</span> <span class="op">/</span> <span class="fl">3.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">/</span> <span class="fu">sqrt</span>.(<span class="cn">π</span> <span class="op">*</span> α) <span class="op">.*</span> t<span class="op">.^</span><span class="fl">1.5</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Q</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">heat_loss_rate_variable_area</span>(Ts, To, α, K, A_dot, t)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="fl">2.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">.*</span> <span class="fu">sqrt</span>.(t <span class="op">/</span> (<span class="cn">π</span> <span class="op">*</span> α))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s calculate the cumulative heat loss to overburden over a period of 10 years, where the surface area increases linearly with time at a rate of 4000/365 <span class="math inline">\((\mathrm m^2/ \mathrm day)\)</span>.</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span><span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>A_dot  <span class="op">=</span> <span class="fl">4000.0</span> <span class="op">/</span> <span class="fl">365.0</span> <span class="co"># m^2/day</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> <span class="fu">cumulative_heat_loss_variable_area</span>(Ts, To, α, K, A_dot, t) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_Q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, Q <span class="op">=</span> Q);</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>Q, </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Heat loss to overburden (MJoules)"</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 4000 m^2/year"</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topleft,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<p><img src="index_files/figure-html/cell-14-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The annual heat loss to overburden and the steam requirement to compensate for the heat loss to overburden are calculated as follows:</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_Q_sub <span class="op">=</span> df_Q[df_Q.year <span class="op">.==</span> <span class="fu">round</span>.(df_Q.year, digits <span class="op">=</span> <span class="fl">0</span>), <span class="op">:</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_lag] <span class="op">=</span> <span class="fu">lag</span>(df_Q_sub.Q, <span class="fl">1</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_incremental] <span class="op">=</span> df_Q_sub.Q <span class="op">-</span> df_Q_sub.Q_lag</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>steam_requirement] <span class="op">=</span> df_Q_sub.Q_incremental <span class="op">./</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                                net_heat_per_tonne_of_steam</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>steam_requirement,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Steam requirement (tonnes)"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Annual Steam Requirement"</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 4000 m^2/year"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topleft,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="37">
+<p><img src="index_files/figure-html/cell-15-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The rate of heat loss to overburden is calculated as follows:</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fu">heat_loss_rate_variable_area</span>(Ts, To, α, K, A_dot, t) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ/day</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df_q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, q <span class="op">=</span> q)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>q, </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Rate of heat loss to overburden (MJoules/day)"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 4000 m^2/year"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topleft,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<p><img src="index_files/figure-html/cell-16-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="surface-area-increases-to-a-limit-and-then-stops-expanding" class="level2">
+<h2 class="anchored" data-anchor-id="surface-area-increases-to-a-limit-and-then-stops-expanding">3. Surface area increases to a limit and then stops expanding</h2>
+<p>In this scenario, the surface area that is exposed to the steam chamber increases linearly with time until it reaches a certain limit and then stops expanding. This situation is common in steam-assisted gravity drainage (SAGD) operations. The solution to this problem is also provided by <span class="citation" data-cites="Butler1997">(<a href="#ref-Butler1997" role="doc-biblioref">Butler 1997</a>)</span>. The linear expansion period occurs during the first <span class="math inline">\(t_{1}\)</span> days. After that, the surface area remains constant and no further expansion occurs.</p>
+<p>For <span class="math inline">\(t \leq t_{1}\)</span>:</p>
+<p><span class="math display">\[
+Q = \frac{4}{3} \frac{ (T_{s} - T_{o}) \cdot K \cdot \dot{A}} {\sqrt{\pi \alpha}} [t^{1.5}]
+\]</span></p>
+<p>and for <span class="math inline">\(t \gt t_{1}\)</span>:</p>
+<p><span class="math display">\[
+% \begin{split}
+Q = \frac{4}{3} \frac{ (T_{s} - T_{o}) \cdot K \cdot \dot{A}} {\sqrt{\pi \alpha}} [t^{1.5} - (t - t_{1})^{1.5}]
+% \end{split}
+\]</span></p>
+<p>where <span class="math inline">\(\dot{A}\)</span> is the rate of change of surface area.</p>
+<p>The following function estimates the cumulative heat loss to overburden:</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_loss_variable_area_limit</span>(Ts, To, α, K, A_dot, t, t1)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    Q <span class="op">=</span> <span class="fu">zeros</span>(<span class="fu">length</span>(t))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu">length</span>(t)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> t[i] <span class="op">&lt;=</span> t1</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                Q[i] <span class="op">=</span> <span class="fl">4.0</span> <span class="op">/</span> <span class="fl">3.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">/</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sqrt</span>(<span class="cn">π</span> <span class="op">*</span> α) <span class="op">*</span> (t[i] <span class="op">^</span> <span class="fl">1.5</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                Q[i] <span class="op">=</span> <span class="fl">4.0</span> <span class="op">/</span> <span class="fl">3.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">/</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sqrt</span>(<span class="cn">π</span> <span class="op">*</span> α) <span class="op">*</span> (t[i] <span class="op">^</span> <span class="fl">1.5</span> <span class="op">-</span> (t[i] <span class="op">-</span> t1) <span class="op">^</span> <span class="fl">1.5</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">end</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Q</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For this scenario, we will estimate the cumulative heat loss to overburden over a surface area that linearly increases with time for 4 years and then stops expanding for the next 6 years, with a total surface area of 40,000 <span class="math inline">\(\mathrm m^{2}\)</span>.</p>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">1.0</span><span class="op">:</span><span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>t1 <span class="op">=</span> <span class="fl">4</span> <span class="op">*</span> <span class="fl">365</span> <span class="co"># days</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>A_dot  <span class="op">=</span> <span class="fl">10000.0</span> <span class="op">/</span> <span class="fl">365.0</span> <span class="co"># m^2/day</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> <span class="fu">cumulative_heat_loss_variable_area_limit</span>(Ts, To, α, K, A_dot, t, t1) <span class="op">/</span> </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                                                                        <span class="fl">1e6</span> <span class="co"># MJ</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>df_Q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, Q <span class="op">=</span> Q);</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>Q, </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Heat loss to overburden (MJoules)"</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 10000 m^2/year"</span>,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topleft,</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="40">
+<p><img src="index_files/figure-html/cell-18-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The annual heat loss to overburden and the steam requirement to compensate for the heat loss to overburden can be calculated as follows:</p>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_Q_sub <span class="op">=</span> df_Q[df_Q.year <span class="op">.==</span> <span class="fu">round</span>.(df_Q.year, digits <span class="op">=</span> <span class="fl">0</span>), <span class="op">:</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_lag] <span class="op">=</span> <span class="fu">lag</span>(df_Q_sub.Q, <span class="fl">1</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>Q_incremental] <span class="op">=</span> df_Q_sub.Q <span class="op">-</span> df_Q_sub.Q_lag</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>df_Q_sub[!, <span class="op">:</span>steam_requirement] <span class="op">=</span> df_Q_sub.Q_incremental <span class="op">./</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                        net_heat_per_tonne_of_steam</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_Q_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>steam_requirement,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Steam requirement (tonnes)"</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Annual Steam Requirement"</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 10000 m^2/year"</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="41">
+<p><img src="index_files/figure-html/cell-19-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>The rate of heat loss to overburden can be estimated as follows:</p>
+<p>For <span class="math inline">\(t \leq t_{1}\)</span>:</p>
+<p><span class="math display">\[q = 2 \frac{(T_{s} - T_{o}) \cdot K \cdot \dot{A}} {\sqrt{\pi \alpha}} [t^{0.5}] \]</span></p>
+<p>and for <span class="math inline">\(t \gt t_{1}\)</span>:</p>
+<p><span class="math display">\[q = 2 \frac{(T_{s} - T_{o}) \cdot K \cdot \dot{A}} {\sqrt{\pi \alpha}} [t^{0.5} - (t - t_{1})^{0.5}] \]</span></p>
+<p>Here’s a function that calculates the rate of heat loss to overburden for the scenario where surface area increases to a limit and then stops expanding.</p>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">heat_loss_rate_variable_area_limit</span>(Ts, To, α, κ, A_dot, t, t1)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="fu">zeros</span>(<span class="fu">length</span>(t))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu">length</span>(t)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> t[i] <span class="op">&lt;=</span> t1</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            q[i] <span class="op">=</span> <span class="fl">2.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">/</span> <span class="fu">sqrt</span>(<span class="cn">π</span> <span class="op">*</span> α) <span class="op">*</span> </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            (t[i] <span class="op">^</span> <span class="fl">0.5</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>            q[i] <span class="op">=</span> <span class="fl">2.0</span> <span class="op">*</span> (Ts <span class="op">-</span> To) <span class="op">*</span> K <span class="op">*</span> A_dot <span class="op">/</span> <span class="fu">sqrt</span>(<span class="cn">π</span> <span class="op">*</span> α) <span class="op">*</span> </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>            (t[i] <span class="op">^</span> <span class="fl">0.5</span> <span class="op">-</span> (t[i] <span class="op">-</span> t1) <span class="op">^</span> <span class="fl">0.5</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> q</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The results for the rate of heat loss to overburden are shown below.</p>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="fu">heat_loss_rate_variable_area_limit</span>(Ts, To, α, K, A_dot, t, t1) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ/day</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>df_q <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, q <span class="op">=</span> q)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_q <span class="fu">plot</span>(<span class="op">:</span>t, <span class="op">:</span>q, </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Time (days)"</span>, </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Rate of heat loss to overburden (MJoules/day)"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> <span class="st">"A_dot = 10000 m^2/year"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>bottomright,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<p><img src="index_files/figure-html/cell-21-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-Butler1997" class="csl-entry" role="doc-biblioentry">
+Butler, Roger M. 1997. <em>THERMAL RECOVERY OF OIL AND BITUMEN</em>. 6th ed. GravDrain Inc.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

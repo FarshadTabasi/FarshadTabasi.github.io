@@ -1,0 +1,189 @@
+---
+title: "Alberta In-situ Oilsands Production Analysis using Python - Part III"
+subtitle: "Data analysis and visualization"
+author: "Farshad Tabasinejad"
+date: "2023-03-05"
+# date-modified: "2021-03-05"
+toc: true
+draft: false
+categories: [python, data analysis, data visualization, pandas, seaborn, matplotlib]
+image: "alberta_production_rates.png"
+execute: 
+  cache: false
+  output: true
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    code-overflow: wrap
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-copy: hover
+    highlight: zenburn
+jupyter: python3
+---
+
+# Disclaimer
+
+This blog post is for educational purposes only. Any commercial use of the information provided in this blog post is prohibited. For more information about the AER copyright and permission to reproduce, please visit [AER Copyright and Disclaimer](https://www.aer.ca/copyright-disclaimer).
+The author is not responsible for any damage or loss caused by the use of the information provided in this blog post. 
+
+# Introduction
+
+Alberta Energy Regulator (AER) lists the monthly injection and production data for all in-situ oilsands projects in Alberta on its website [Alberta Energy Regulator](https://www.aer.ca/). The data is available in several spreadsheets and can be downloaded from [ST53: Alberta In Situ Oil Sands Production Summary](https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53). The annual data are reported in separate files in **`.xls`** format. Each file has 6 different sheets with information about bitumen, water, steam, wells, SOR, and WSR.
+
+To learn how to download and prepare the tidy dataset in `.csv` format, please refered to the previous posts [Downloading Alberta Oilsands Production Data using Python]() and [Alberta In-situ Oilsands Production Analysis using Python - Part I](). In this post we use the tidy `bitumen.csv` file for data analysis and visualization.
+
+# Loading the data
+
+All files are stored in the current local directory. We use the `glob` module to list all `.csv` files in the directory and then use `pandas` to read the data into a `DataFrame`. The `matplotlib` and `seaborn` modules are used to create the plots.
+
+
+```{python}
+import glob
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+The `glob` module is used to list all `.csv` files in the directory, which we can then read into a DataFrame using pandas. 
+
+```{python}
+csv_files = glob.glob('*.csv')
+csv_files
+```
+
+The `bitumen.csv` file is loaded into a dataframe using the `read_csv` function from the pandas module.
+
+```{python}
+bitumen = pd.read_csv("bitumen.csv")
+bitumen.head()
+```
+
+# Data analysis and visualization
+
+## Alberta average bitumen production rate per year
+
+The daily bitumen production rate is reported as a monthly average in m3/day. An approximation of the yearly average production rate in m3/day is calculated by taking the average of the monthly average production rates. The yearly average production rate is then converted to Mm3/day by dividing it by 1,000.
+
+```{python}
+# Calculate the average daily production rate for each year
+bitumen_agg = (bitumen
+              .assign(Production_Rate = lambda x: x.loc[:,"Jan":"Dec"].mean(axis = 1))
+              .drop(columns = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+              .groupby(['Year'])
+              .sum()
+              .div(1000)
+              .reset_index()
+              )
+bitumen_agg
+```
+
+Let's see the yearly average production rate in Mm3/day.
+
+```{python}
+# Plot the yearly average production rate
+plt.figure(figsize = (8, 6))
+sns.barplot(x = 'Year', y = 'Production_Rate', data = bitumen_agg)
+plt.title('Alberta average bitumen production rate')
+plt.xlabel('Year')
+plt.ylabel('Production Rate (Mm3/day)')
+plt.show()
+```
+
+## Largest bitumen producers in Alberta since 2010
+
+The top 10 largest bitumen producers in Alberta since 2010 are listed below. The data is sorted by the total bitumen production in descending order. The total bitumen production rate is converted to MMm3/day by dividing by 1,000,000.
+
+```{python}
+# Calculate the total bitumen production rate for each operator
+bitumen_agg = (bitumen
+              .assign(Cumulative_Production = lambda x: x.loc[:,"Jan":"Dec"].sum(axis = 1) * 365)
+              .drop(columns = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Year'])
+              .groupby(['Operator'])
+              .sum()
+              .div(1_000_000)
+              .sort_values(by = 'Cumulative_Production', ascending = False)
+              .reset_index()
+              .head(10)
+              )
+bitumen_agg 
+```
+
+The figure below illustrates the top 10 largest bitumen producers in Alberta since 2010.
+
+```{python}
+# Plot the top 10 largest bitumen producers in Alberta since 2010
+plt.figure(figsize = (8, 6))
+sns.barplot(x = 'Cumulative_Production', y = 'Operator', data = bitumen_agg)
+plt.title('Top 10 largest bitumen producers in Alberta since 2010')
+plt.xlabel('Cumulative Production (MMm3)')
+plt.ylabel('Operator')
+plt.show()
+```
+
+## Largest bitumen producers in Alberta in 2022
+
+The top 10 largest bitumen producers in Alberta in 2022 are listed below. The data is sorted by the bitumen production rate in descending order. The yearly bitumen production rate is converted to Mm3/day by dividing by 1,000.
+
+```{python}
+# Calculate the yearly bitumen production rate for each operator
+bitumen_agg = (bitumen
+              .query("Year == 2022")
+              .assign(Production_Rate = lambda x: x.loc[:,"Jan":"Dec"].mean(axis = 1))
+              .drop(columns = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Year'])
+              .groupby(['Operator'])
+              .sum()
+              .div(1000)
+              .sort_values(by = 'Production_Rate', ascending = False)
+              .reset_index()
+              .head(10)
+              )
+bitumen_agg
+```
+
+The top 10 largest bitumen producers in Alberta in 2022 are shown in the plot below.
+
+```{python}
+# Plot the top 10 largest bitumen producers in Alberta in 2022
+plt.figure(figsize = (8, 6))
+sns.barplot(x = 'Production_Rate', y = 'Operator', data = bitumen_agg)
+plt.title('Top 10 largest bitumen producers in Alberta in 2022')
+plt.xlabel('Production Rate (Mm3/day)')
+plt.ylabel('Operator')
+plt.show()
+```
+
+## Largest bitumen producers in Alberta in 2022 by area
+
+The top 5 largest 2022 bitumen producers by area in Alberta are listed below. The data is sorted by the bitumen production rate in descending order. The yearly bitumen production rate is converted to Mm3/day by dividing by 1,000.
+
+```{python}
+# Calculate the yearly bitumen production rate for each operator by area
+bitumen_agg = (bitumen
+              .query("Year == 2022")
+              .assign(Production_Rate = lambda x: x.loc[:,"Jan":"Dec"].mean(axis = 1))
+              .drop(columns = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Year'])
+              .groupby(['Area', 'Operator'])
+              .sum()
+              .div(1000)
+              .sort_values(by = 'Production_Rate', ascending = False)
+              .groupby('Area')
+              .head(5)
+              .reset_index()
+              )
+bitumen_agg
+```
+
+The figure below shows the top 5 largest bitumen producers in Alberta in 2022 by area.
+
+```{python}
+fig, ax = plt.subplots(3, 1, figsize = (6, 15))
+for i, area in enumerate(bitumen_agg['Area'].unique()):
+    sns.barplot(x = 'Production_Rate', y = 'Operator', data = bitumen_agg.query("Area == @area"), ax = ax[i])
+    ax[i].set_title(area)
+    ax[i].set_xlabel('Production Rate (Mm3/day)')
+    ax[i].set_ylabel('Operator')
+fig.subplots_adjust(top = 0.95)
+plt.show()
+```

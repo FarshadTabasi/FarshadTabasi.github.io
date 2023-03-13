@@ -1,0 +1,262 @@
+---
+title: "Alberta In-situ Oilsands Production Analysis using Python - Part II"
+subtitle: "Preparing a tidy dataset for data analysis and visualization"
+author: "Farshad Tabasinejad"
+date: "2023-03-04"
+# date-modified: "2021-03-04"
+toc: true
+draft: false
+categories: [python, pandas, data analysis, data visualization]
+image: "top_ten_largest_ever.png"
+execute: 
+  cache: false
+  output: true
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    code-overflow: wrap
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-copy: hover
+    highlight: zenburn
+jupyter: python3
+---
+
+# Disclaimer
+
+This blog post is for educational purposes only. Any commercial use of the information provided in this blog post is prohibited. For more information about the AER copyright and permission to reproduce, please visit [AER Copyright and Disclaimer](https://www.aer.ca/copyright-disclaimer).
+The author is not responsible for any damage or loss caused by the use of the information provided in this blog post. 
+
+# Introduction
+
+This blog post focuses on analyzing the bitumen production data from in-situ oilsands projects in Alberta. Alberta Energy Regulator (AER) lists the monthly injection and production data for all in-situ oilsands projects in Alberta on its website [Alberta Energy Regulator](https://www.aer.ca/). The data is available in several spreadsheets and can be downloaded from [ST53: Alberta In Situ Oil Sands Production Summary](https://www.aer.ca/providing-information/data-and-reports/statistical-reports/st53). The annual data are reported in separate files in .xls format. Each file has 6 different sheets with the following information: bitumen production, water usage, steam injection, well count, steam-to-oil ratio (SOR), and water-to-oil ratio (WSR).
+
+In the previous post [Downloading Alberta Oilsands Production Data using Python](), I have shown how to download the data using python. In this post we create a tidy bitumen dataset for data analysis and visualization.
+
+# Loading the Data
+
+All files are stored in the current local directory. We use the `glob` module to list all `.xls` files in the directory and then use `pandas` to read the data into a `DataFrame`. The `xlrd` is used as an engine in pandas to read the `.xls` files. The `numpy` module is used to perform mathematical operations on the data. The `warnings` module is used to suppress the warnings.
+
+```{python}
+import glob
+import pandas as pd
+import numpy as np
+import xlrd
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+The `glob` module is used in this code to create a list of file paths for all the .xls files in the current directory.
+
+```{python}
+xls_files = glob.glob('*.xls')
+xls_files
+```
+
+# Analyzing the 2010 bitumen production data
+This section describes the steps for creating a tidy dataset for bitumen production using the 2010 data.
+
+## Reading the first file
+
+To start, we read the data from the `ST53_2010.xls` file using the `read_excel` function from the pandas library. We set the `sheet_name` argument to `None` to read all the sheets in the file. We also use the `skiprows` argument to skip the first three rows of each sheet. Finally, we use the `keys()` method to print the names of the sheets in the file.
+
+```{python}
+sheets = pd.read_excel(xls_files[0], sheet_name = None, skiprows = 3)
+print(f'sheet names: {sheets.keys()}')
+```
+
+## Reading the BITUMEN sheet
+
+```{python}
+# read the BITUMEN sheet
+bitumen_2010 = sheets['BITUMEN']
+```
+
+The `info` method is used to print the column names and data types of each column in the DataFrame.
+
+```{python}
+bitumen_2010.info()
+``` 
+
+The `head` method is used to display the first 5 rows of the `DataFrame`.
+
+```{python}
+bitumen_2010.head()
+```
+
+The `tail` method is used to print the last 20 rows of the `DataFrame`.
+
+```{python}
+bitumen_2010.tail(20)
+``` 
+
+Since the number of producers in the file can vary, we cannot rely on a fixed index number to subset the dataset. However, the last row of the dataset always contains a summary of the total production, which is identified by the cell value of __Total__ in the `Recovery Method` column. Therefore, we can use the index number of the row with __Total__ in the Recovery Method column to subset the dataset and exclude the summary row and any other rows with additional information.
+
+```{python}
+# get the index of the last row using np.where
+last_row_idx = np.where(bitumen_2010[["Recovery Method"]] == "Total ")[0][0]
+bitumen_2010 = bitumen_2010.iloc[:last_row_idx, :]
+```
+
+In addition, we can remove the `Monthly Average` column from the dataset since we will be aggregating the data in our analysis and therefore do not need the monthly averages.
+
+```{python}
+bitumen_2010 = bitumen_2010.drop(columns = ['Monthly Average'])
+```
+
+## Cleaning the Operator column
+
+Let's take a look at the `Operator` column.
+
+```{python}
+bitumen_2010['Operator'].unique()
+```
+
+The Operator column contains several names that are followed by `(subscripts)`. These additional pieces of information create inconsistencies in the `Operator` column and add unnecessary complexity to the dataset. Since they are not needed for our analysis, we can remove them using the `replace` method.
+
+```{python}
+bitumen_2010['Operator'] = bitumen_2010['Operator'].str.replace(r'\(.*\)', '').str.strip()
+bitumen_2010['Operator'].unique()
+```
+
+The operator names in the dataset may contain inconsistencies where some operators are listed with different names. To make the names consistent, we can create a dictionary with the names to be replaced and the new names. However, it's important to note that the following dictionary may contain additional names that are not in the 2010 dataset. This dictionary was created using data from all the files between 2010 and 2022.
+
+
+```{python}
+# create a dictionary to make Operator names consistent
+operators_dict = {'Athabasca Oil Corporation': 'Athabasca Oil',
+                  'Baytex Energy Ltd.': 'Baytex',
+                  'Blackpearl Resources Inc.': 'BlackPearl',
+                  'BlackPearl Resources Inc.': 'BlackPearl',
+                  'Bonavista Petroleum Ltd.': 'Bonavista',
+                  'Bonavista Energy Corporation': 'Bonavista',
+                  'CNOOC Petroleum North America ULC': 'CNOOC',
+                  'Canadian Natural Resources': 'CNRL',
+                  'Canadian Natural Resources Limited': 'CNRL',
+                  'Canadian Natural Upgrading Limited': 'CNRL',
+                  'Cenovus Energy Inc.': 'Cenovus',
+                  'Cenovus FCCL Ltd.': 'Cenovus',
+                  'ConocoPhillips Canada Resources Corp.': 'ConocoPhillips',
+                  'ConocoPhillips Canada Limited': 'ConocoPhillips',
+                  'Devon Canada Corporation': 'Devon',
+                  'Devon NEC Corporation': 'Devon',
+                  'ExxonMobil Canada Ltd.': 'Imperial',
+                  'Greenfire Hangingstone Operating Corporation': 'Greenfire',
+                  'Greenfire Resources Operating Corporation': 'Greenfire',
+                  'Husky Oil Operations Limited' : 'Husky',
+                  'Husky Oil Operations Ltd.' : 'Husky',
+                  'Imperial Oil Resources': 'Imperial',
+                  'Imperial Oil Resources Limited': 'Imperial',
+                  'Islander Oil & Gas Inc.': 'Islander',
+                  'Koch Exploration Canada G/P Ltd.': 'Koch',
+                  'Koch Oil Sands Operating ULC': 'Koch',
+                  'MEG Energy Corp.': 'MEG',
+                  'Meg Energy Corp.': 'MEG',
+                  'Murphy Oil Canada': 'Murphy',
+                  'Murphy Oil Company Ltd.': 'Murphy',
+                  'Nexen Energy ULC': 'Nexen',
+                  'Nexen Inc.': 'Nexen',
+                  'Obsidian Energy Ltd.': 'Obsidian',
+                  'OSUM Oil Sands Corp.': 'OSUM',
+                  'Osum Production Corp.': 'OSUM',
+                  'Pengrowth Corporation': 'Pengrowth',
+                  'Pengrowth Energy Corporation': 'Pengrowth',
+                  'Penn West Energy Trust': 'Penn West',
+                  'Penn West Petroleum Ltd.': 'Penn West',
+                  'Perpetual Energy Inc.': 'Perpetual',
+                  'Perpetual Energy Operating Corp.': 'Perpetual',
+                  'Perpetual Operating Corp.': 'Perpetual',
+                  'PetroChina Canada Ltd.': 'PetroChina',
+                  'Petrochina Canada Ltd.': 'PetroChina',
+                  'Strathcona Resources Ltd.': 'Strathcona',
+                  'Shell Canada Energy': 'Shell',
+                  'Shell Canada Limited': 'Shell',
+                  'Spur Petroleum Ltd.': 'Spur',
+                  'Spur Resources Ltd.': 'Spur',
+                  'Suncor Energy Inc.': 'Suncor',
+                  'Woodcote Oil & Gas Inc.': 'Woodcote',
+                  'Woodcote Oil Corp.': 'Woodcote'
+                  }
+```
+
+
+```{python}
+# replace the names in the Operator column
+bitumen_2010['Operator'] = bitumen_2010['Operator'].replace(operators_dict)
+bitumen_2010['Operator'].unique()
+```
+
+It should be noted that there have been a number of acquisitions and mergers in the oil and gas industry in recent years, and this can lead to inconsistencies in the naming of operators across different years. However, for the sake of simplicity, we will ignore these changes and assume that operator names remain consistent across all years.
+
+## Simplifiying the Area column
+
+To simplify the `Area` column, we can replace the values `Peace River Area 1` and `Peace River Area 2` with a single value `Peace River`. This is done to aggregate the production data for the Peace River area.
+
+
+```{python}
+bitumen_2010['Area'] = bitumen_2010['Area'].replace({'Peace River Area 1': 'Peace River', 'Peace River Area 2': 'Peace River'}) 
+bitumen_2010['Area'].unique()
+```
+
+There is only one row with an `Area` value of `Athabasca, Cold Lake`. To make it consistent with the other rows, we can change it to `Cold Lake`.
+
+```{python}
+bitumen_2010['Area'] = bitumen_2010['Area'].replace({'Athabasca, Cold Lake': 'Cold Lake'})
+```
+
+We also add a `Year` column to the dataframe.
+
+```{python}
+bitumen_2010['Year'] = int(xls_files[0].split('_')[-1].split('-')[0])
+bitumen_2010['Year'].unique()
+```
+
+# Creating a single tidy dataset for bitumen production for all years
+
+We can combine all the previous steps to create a function that generates a tidy dataset for the bitumen analysis. The function takes the following arguments:
+
+- `df`: a dataframe for a given year
+- `operators_dict`: a dictionary with the names to be replaced and the new names
+- `xls_file`: the name of the excel file for a given year
+
+```{python}
+# define a function to create a tidy dataset for bitumen production
+def create_tidy_bitumen(df, operators_dict, xls_file):
+    last_row_idx = np.where(df[["Recovery Method"]] == "Total ")[0][0]
+    df = df.iloc[:last_row_idx, :]
+    df = (df
+            .drop(columns = ['Monthly Average'])
+            .dropna(subset = ['Operator'])
+            .assign(Operator = lambda x: x.Operator.str.split('(').str[0].str.strip())
+            .assign(Operator = lambda x: x.Operator.str.replace('  ', ' '))
+            .replace({'Operator': operators_dict})
+            .assign(Year = int(xls_file.split('_')[-1].split('-')[0]))
+            .assign(Area = lambda x: x.Area.replace({'Peace River Area 1': 'Peace River', 'Peace River Area 2': 'Peace River'}))
+    )
+    return df
+```
+
+To generate a tidy dataset for bitumen production for all years, we can use the previously defined function to create tidy datasets for each year and then use a for loop to iterate through all the .xls files. For each year, we generate a tidy dataset using the function and append it to the `bitumen` dataframe using the `df.append()` method.
+
+```{python}
+# create a tidy dataset for bitumen production for all years
+bitumen = pd.DataFrame()
+for xls_file in xls_files:
+    df = pd.read_excel(xls_file, sheet_name = None, skiprows = 3)
+    bitumen = bitumen.append(create_tidy_bitumen(df['BITUMEN'], operators_dict, xls_file))
+```
+
+Let's check the `Year` column to make sure that we have data for all years.
+
+```{python}
+bitumen['Year'].unique()
+```
+
+# Saving the dataset
+
+We save the dataset as a csv file in the current local folder for future use.
+
+```{python}
+bitumen.to_csv('bitumen.csv', index = False)
+```
