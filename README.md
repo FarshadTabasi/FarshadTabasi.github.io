@@ -1,4 +1,4 @@
-# entropy
+# Entropy
 
 ## Welcome to my weblog!
 
