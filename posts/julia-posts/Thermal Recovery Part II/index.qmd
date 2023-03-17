@@ -141,6 +141,7 @@ end
 group = :t, 
 xlabel = "Distance from the boundary (m)", 
 ylabel = "Temperature (°C)", 
+title = "Temperature distribution in overburden",
 label = 
 reshape(string.("t = ", string.([3.65, 365, 730, 1095, 1460]), " days"), :, 5),
 lw = 3, 
@@ -162,11 +163,11 @@ $$q = - K \cdot A (\frac{\partial T}{\partial x})_{x=0}$$ {#eq-2}
 
 where `K` is the thermal conductivity, `T` is the temperature, and `x` is the distance from the boundary. The cumulative heat loss to overburden is given by:
 
-$$Q_{c} = \int_0^t - K \cdot A (\frac{\partial T}{\partial x})_{_{x=0}} dt$$ {#eq-3}
+$$Q = \int_0^t - K \cdot A (\frac{\partial T}{\partial x})_{_{x=0}} dt$$ {#eq-3}
 
 where $t$ is time. Using the temperature profile given in [@eq-1], we can calculate the cumulative heat loss to overburden as:
 
-$$Q_{c} = 2 (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{t}{\pi \alpha}}$$
+$$Q = 2 (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{t}{\pi \alpha}}$$
 
 The following function is defined to calculate the cumulative heat loss to overburden.
 
