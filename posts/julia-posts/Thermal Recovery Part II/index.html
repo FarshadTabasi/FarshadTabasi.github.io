@@ -343,14 +343,15 @@ div.csl-indent {
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>group <span class="op">=</span> <span class="op">:</span>t, </span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>xlabel <span class="op">=</span> <span class="st">"Distance from the boundary (m)"</span>, </span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ylabel <span class="op">=</span> <span class="st">"Temperature (°C)"</span>, </span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">reshape</span>(<span class="fu">string</span>.(<span class="st">"t = "</span>, <span class="fu">string</span>.([<span class="fl">3.65</span>, <span class="fl">365</span>, <span class="fl">730</span>, <span class="fl">1095</span>, <span class="fl">1460</span>]), <span class="st">" days"</span>), <span class="op">:</span>, <span class="fl">5</span>),</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Temperature distribution in overburden"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>label <span class="op">=</span> </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">reshape</span>(<span class="fu">string</span>.(<span class="st">"t = "</span>, <span class="fu">string</span>.([<span class="fl">3.65</span>, <span class="fl">365</span>, <span class="fl">730</span>, <span class="fl">1095</span>, <span class="fl">1460</span>]), <span class="st">" days"</span>), <span class="op">:</span>, <span class="fl">5</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>legend<span class="op">=:</span>topright,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>frame<span class="op">=:</span>box)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <p><img src="index_files/figure-html/cell-5-output-1.svg" class="img-fluid"></p>
 </div>
@@ -363,9 +364,9 @@ div.csl-indent {
 <p>The rate of heat loss to overburden at the reservoir/overburden interface over a constant surface area (A) is given by:</p>
 <p><span id="eq-2"><span class="math display">\[q = - K \cdot A (\frac{\partial T}{\partial x})_{x=0} \tag{2}\]</span></span></p>
 <p>where <code>K</code> is the thermal conductivity, <code>T</code> is the temperature, and <code>x</code> is the distance from the boundary. The cumulative heat loss to overburden is given by:</p>
-<p><span id="eq-3"><span class="math display">\[Q_{c} = \int_0^t - K \cdot A (\frac{\partial T}{\partial x})_{_{x=0}} dt \tag{3}\]</span></span></p>
+<p><span id="eq-3"><span class="math display">\[Q = \int_0^t - K \cdot A (\frac{\partial T}{\partial x})_{_{x=0}} dt \tag{3}\]</span></span></p>
 <p>where <span class="math inline">\(t\)</span> is time. Using the temperature profile given in <a href="#eq-1">Equation&nbsp;1</a>, we can calculate the cumulative heat loss to overburden as:</p>
-<p><span class="math display">\[Q_{c} = 2 (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{t}{\pi \alpha}}\]</span></p>
+<p><span class="math display">\[Q = 2 (T_{s} - T_{o}) \cdot K \cdot A \sqrt{\frac{t}{\pi \alpha}}\]</span></p>
 <p>The following function is defined to calculate the cumulative heat loss to overburden.</p>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_loss_constant_area</span>(Ts, To, α, K, A, t)</span>
@@ -704,7 +705,7 @@ Q = \frac{4}{3} \frac{ (T_{s} - T_{o}) \cdot K \cdot \dot{A}} {\sqrt{\pi \alpha}
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-Butler1997" class="csl-entry" role="doc-biblioentry">
-Butler, Roger M. 1997. <em>THERMAL RECOVERY OF OIL AND BITUMEN</em>. 6th ed. GravDrain Inc.
+Butler, Roger M. 1997. <em>Thermal Recovery of Oil and Bitumen</em>. 6th ed. GravDrain Inc.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
