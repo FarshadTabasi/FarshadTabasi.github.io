@@ -31,7 +31,7 @@ This blog post is for educational purposes only. Any commercial use of the infor
 
 # Introduction
 
-In the previous post, we discussed heat conduction from a stationary hot surface area into the overburden. We then extended the model to a case where the hot source area expanded over time across the overburden surface. In this post, we will further extend the model to include heat conduction ahead of an advancing front moving into the overburden. The problem we aim to solve is a one-dimensional heat conduction model with a moving front. Details of this problem can be found in [@Butler1997]. We will implement the model using Julia.
+In the previous post, we discussed heat conduction from a stationary hot surface area into the overburden. We then extended the model to a case where the hot source area expanded over time across the overburden surface. In this post, we will further extend the model to include heat conduction ahead of an advancing front moving into the reservoir. The problem we aim to solve is a one-dimensional heat conduction model with a moving front. Details of this problem can be found in [@Butler1997]. We will implement the model using Julia.
 
 
 # Heat conduction ahead of an advancing front
