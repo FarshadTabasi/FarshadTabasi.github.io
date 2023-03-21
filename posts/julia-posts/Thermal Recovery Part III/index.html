@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Farshad Tabasinejad">
-<meta name="dcterms.date" content="2023-03-18">
+<meta name="dcterms.date" content="2023-03-20">
 
 <title>Entropy - Thermal Recovery - Part III</title>
 <style>
@@ -85,6 +85,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -185,7 +204,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#total-heat-stored-ahead-of-the-front-at-steady-state" id="toc-total-heat-stored-ahead-of-the-front-at-steady-state" class="nav-link" data-scroll-target="#total-heat-stored-ahead-of-the-front-at-steady-state">Total heat stored ahead of the front at steady state</a></li>
   <li><a href="#total-heat-stored-ahead-of-the-front-at-transient-state" id="toc-total-heat-stored-ahead-of-the-front-at-transient-state" class="nav-link" data-scroll-target="#total-heat-stored-ahead-of-the-front-at-transient-state">Total heat stored ahead of the front at transient state</a></li>
   <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -219,16 +237,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 18, 2023</p>
+      <p class="date">March 20, 2023</p>
     </div>
   </div>
   
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 18, 2021</p>
-    </div>
-  </div>
     
   </div>
   
@@ -241,49 +253,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>In the previous post, we discussed heat conduction into the overburden from a stationary hot surface area. It was extended to a case with the hot source area exapnding over time parallel to the overburden surface. In this post, we will extend the model to include heat conduction ahead of an advancing front moving into the overburden. The model is based on the work of [1]. The problem is a 1D heat conduction model with a moving front. Details of the model can be found in [1]. The model is implemented in Julia and the source code can be downloaded by clicking on <strong><code>&lt;/&gt;Code</code></strong> next to the blog title.</p>
+<p>In the previous post, we discussed heat conduction from a stationary hot surface area into the overburden. We then extended the model to a case where the hot source area expanded over time across the overburden surface. In this post, we will further extend the model to include heat conduction ahead of an advancing front moving into the overburden. The problem we aim to solve is a one-dimensional heat conduction model with a moving front. Details of this problem can be found in <span class="citation" data-cites="Butler1997">(<a href="#ref-Butler1997" role="doc-biblioref">Butler 1997</a>)</span>. We will implement the model using Julia.</p>
 </section>
 <section id="heat-conduction-ahead-of-an-advancing-front" class="level1">
 <h1>Heat conduction ahead of an advancing front</h1>
-<p>In a steam-assisted gravity drainage (SAGD) process, as the mixture of heated oil and condensate moves downward due to the gravity, the steam chamber expandes to fill in the voidage. A fraction of the stored heat in the chamber will be transfered ahead of the moving chamber into the cold region by conduction. The heat transfer ahead of the advancing front is modeled as a 1D heat conduction problem with a moving front.</p>
-<p>The analytical solution for this problem is given by [1]:</p>
-<p><span id="eq-1"><span class="math display">\[
-\frac {\partial^{2} T^{*}}{\partial \zeta^{2}} + \frac {\partial T^{*}}{\partial \zeta} = \frac {\partial T^{*}}{\partial t^{*}}
-\tag{1}\]</span></span></p>
-<p>where <span class="math display">\[
-T^{*} = \frac {T - T_{R}} {T_{s} - T_{R}}
-\]</span></p>
-<p><span class="math display">\[
-t^{*} = \frac {U^{2}t} {\alpha}
-\]</span></p>
-<p><span class="math display">\[
-\zeta^{*} = \frac {U \zeta} {U}
-\]</span></p>
-<p>U is the front velocity and <span class="math inline">\(\zeta\)</span> is the distance from the front and is defined as:</p>
+<p>In a steam-assisted gravity drainage (SAGD) process, the heated oil and condensate mixture moves downward due to gravity, causing the steam chamber to expand and fill the void space. A fraction of the stored heat in the chamber is transferred ahead of the moving front by conduction into the cold region. This heat transfer ahead of the advancing front can be modeled as a 1D heat conduction problem with a moving front.</p>
+<p>To simplify the problem, we can transform the moving boundary problem into a stationary problem by introducing a coordinate transformation. The transformed coordinate system is defined based on the distance from the current location of the moving front. This transformation allows us to treat the problem as stationary by fixing the location of the front. By considering the following transformation, the heat conduction problem with a moving boundary can be transformed into a stationary problem:</p>
 <p><span class="math display">\[
 \zeta = x - Ut
 \]</span></p>
-<p>The boundary conditions are:</p>
+<p>Here, x is the original spatial coordinate, U is the velocity of the moving front (constant), t is time, and <span class="math inline">\(\mathrm{\zeta}\)</span> is the new transformed coordinate.</p>
+<p>The given equation, <span class="citation" data-cites="Butler1997">(<a href="#ref-Butler1997" role="doc-biblioref">Butler 1997</a>)</span>:</p>
+<p><span id="eq-1"><span class="math display">\[
+\frac {\partial^{2} T^{*}}{\partial \zeta^{2}} + \frac {\partial T^{*}}{\partial \zeta} = \frac {\partial T^{*}}{\partial t^{*}}
+\tag{1}\]</span></span></p>
+<p>represents the stationary heat conduction problem in a new coordinate system. This equation is dimensionless, which means that all the variables have been scaled to eliminate their physical dimensions. The dimensionless variables are defined as follows:</p>
+<p><span class="math display">\[
+\begin{align}
+T^{*} = \frac {T - T_{r}} {T_{s} - T_{r}} \\[10pt]
+\zeta^{*} = \frac {U \zeta} {\alpha} \\[10pt]
+t^{*} = \frac {U^{2}t} {\alpha}
+\end{align}
+\]</span></p>
+<p>Here, <span class="math inline">\(T\)</span> is the temperature, <span class="math inline">\(T_r\)</span> is the initial reservoir temperature, <span class="math inline">\(T_s\)</span> is the temperature at the moving front, <span class="math inline">\(\zeta\)</span> is the original spatial coordinate, <span class="math inline">\(U\)</span> is the velocity of the moving front, <span class="math inline">\(t\)</span> is time, and <span class="math inline">\(\alpha\)</span> is the thermal diffusivity of the medium. By scaling the variables in this way, we eliminate their physical dimensions and make the equation dimensionless. This simplifies the problem and makes it easier to analyze. The boundary conditions are:</p>
 <p><span class="math display">\[
 T^{*} = 0 \quad \text{when} \quad t = 0 \quad \text{for all} \quad \zeta^{*}
 \]</span></p>
 <p><span class="math display">\[
 T^{*} = 1 \quad \text{when} \quad \zeta^{*} = 0 \quad \text{and} \quad \mathrm t \gt 0
 \]</span></p>
-<p>Solution of this problem is given by Carslaw and Jaeger [2]:</p>
+<p>The solution to this problem is given by Carslaw and Jaeger <span class="citation" data-cites="Carslaw2011">(<a href="#ref-Carslaw2011" role="doc-biblioref">Carslaw and Jaeger 2011</a>)</span> as:</p>
 <p><span class="math display">\[
-T^{*} = \frac {1}{2} \left[\text{erfc} \left( \frac {\zeta^{*} + t^{*}}{\sqrt{4 \mathrm t^{*}}} \right) + e^{-\zeta^{*}} \text{erfc} \left( \frac {\zeta^{*} - t^{*}}{\sqrt{4 \mathrm t^{*}}} \right)    \right]
+T^{*} = \frac {1}{2} \left[\text{erfc} \left( \frac {\zeta^{*} + t^{*}}{\sqrt{4 \mathrm t^{*}}} \right) + e^{-\zeta^{*}} \text{erfc} \left( \frac {\zeta^{*} - t^{*}}{\sqrt{4 \mathrm t^{*}}} \right) \right]
 \]</span></p>
 <p>where <span class="math inline">\(\text{erfc()}\)</span> is the complementary error function.</p>
-<p>For the steady-state case, (<a href="#eq-1">Equation&nbsp;1</a>) will be simplified to:</p>
+<p>For the steady-state case, (<a href="#eq-1">Equation&nbsp;1</a>) simplifies to:</p>
 <p><span id="eq-2"><span class="math display">\[
 \frac {\partial^{2} T^{*}}{\partial \zeta^{2}} + \frac {\partial T^{*}}{\partial \zeta} = 0
 \tag{2}\]</span></span></p>
-<p>The solution of this problem is given by Carslaw and Jaeger [2]:</p>
+<p>The solution to this problem that satisfies the boundary conditions is given as follows:</p>
 <p><span class="math display">\[
 T^{*} = e^{-\zeta^{*}}
 \]</span></p>
-<p>We now implement both solutions in Julia:</p>
+<p>We will now implement both solutions using Julia programming language:</p>
 <div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Plots</span></span>
@@ -294,8 +306,14 @@ T^{*} = e^{-\zeta^{*}}
 </div>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">Tstar_transient</span>(zeta_star, t_star)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> (<span class="fu">erfc</span>((zeta_star <span class="op">+</span> t_star) <span class="op">/</span> <span class="fu">sqrt</span>(<span class="fl">4</span> <span class="op">*</span> t_star)) <span class="op">+</span> <span class="fu">exp</span>(<span class="op">-</span>zeta_star) <span class="op">*</span> <span class="fu">erfc</span>((zeta_star <span class="op">-</span> t_star) <span class="op">/</span> <span class="fu">sqrt</span>(<span class="fl">4</span> <span class="op">*</span> t_star)))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sqrt</span>(<span class="fl">4.0</span> <span class="op">*</span> t_star)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> (zeta_star <span class="op">+</span> t_star) <span class="op">/</span> s</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    x2 <span class="op">=</span> (zeta_star <span class="op">-</span> t_star) <span class="op">/</span> s</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    y1 <span class="op">=</span> <span class="fu">erf</span>.(x1)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    y2 <span class="op">=</span> <span class="fu">erf</span>.(x2)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">.*</span> (<span class="fl">1</span> <span class="op">.-</span> y1 <span class="op">.+</span> <span class="fu">exp</span>.(<span class="op">-</span>zeta_star) <span class="op">.*</span> (<span class="fl">1</span> <span class="op">.-</span> y2))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">Tstar_steady_state</span>(zeta_star)</span>
@@ -304,125 +322,160 @@ T^{*} = e^{-\zeta^{*}}
 </div>
 <p>The solution is plotted below for different values of <span class="math inline">\(t^{*}\)</span>.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>zeta_star <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="fl">200</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">1.0</span>, <span class="fl">3.0</span>];</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot Tstar vs zeta_star for different values of t_star</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(zeta_star, <span class="fu">Tstar_transient</span>.(zeta_star, t_star[<span class="fl">1</span>]), label <span class="op">=</span> <span class="st">"t* = </span><span class="sc">$</span>(t_star[<span class="fl">1</span>])<span class="st">"</span>, </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  legend <span class="op">=</span> <span class="op">:</span>topright, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  lw <span class="op">=</span> <span class="fl">2</span>, </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  title <span class="op">=</span> <span class="st">"Conductive temperature profile ahead of an advancing front"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu">length</span>(t_star)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot!</span>(zeta_star, <span class="fu">Tstar_transient</span>.(zeta_star, t_star[i]), </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">2</span>, </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"t* = </span><span class="sc">$</span>(t_star[i])<span class="st">"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(zeta_star, <span class="fu">Tstar_steady_state</span>.(zeta_star),</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"steady state"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">xlabel!</span>(L<span class="st">"\zeta^{*}"</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ylabel!</span>(L<span class="st">"T^{*}"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<p><img src="index_files/figure-html/cell-6-output-1.svg" class="img-fluid"></p>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define range for zeta_star</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>zeta_star <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="fl">200</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define time values for t_star</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">1.0</span>, <span class="fl">3.0</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot Tstar vs zeta_star for different values of t_star</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(zeta_star, <span class="fu">Tstar_transient</span>.(zeta_star, t_star[<span class="fl">1</span>]), </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"t* = </span><span class="sc">$</span>(t_star[<span class="fl">1</span>])<span class="st">"</span>, </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=:</span>topright,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    frame<span class="op">=:</span>box,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    title <span class="op">=</span> <span class="st">"Conductive temperature profile ahead of an advancing front"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu">length</span>(t_star)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot!</span>(zeta_star, <span class="fu">Tstar_transient</span>.(zeta_star, t_star[i]), </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>          lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>          label <span class="op">=</span> <span class="st">"t* = </span><span class="sc">$</span>(t_star[i])<span class="st">"</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the steady state solution</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot!</span>(zeta_star, <span class="fu">Tstar_steady_state</span>.(zeta_star),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"steady state"</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="fu">xlabel!</span>(L<span class="st">"\zeta^{*}"</span>)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ylabel!</span>(L<span class="st">"T^{*}"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<p><img src="index_files/figure-html/cell-5-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
 <section id="total-heat-stored-ahead-of-the-front-at-steady-state" class="level2">
 <h2 class="anchored" data-anchor-id="total-heat-stored-ahead-of-the-front-at-steady-state">Total heat stored ahead of the front at steady state</h2>
 <p>The cumulative heat stored ahead of the advancing front at steady state is given by:</p>
 <p><span class="math display">\[
-\frac{Q_{c}}{A} = \kappa \frac {(T_{steam} - T_{reservoir})}{U}
+Q = K \cdot A \cdot \frac {(T_{s} - T_{r})}{U}
 \]</span></p>
-<p>The following function is calculates the total heat stored ahead of the front at steady state:</p>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_flux_stored_steady</span>(U, kappa, T_steam, T_reservoir)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kappa <span class="op">*</span> (T_steam <span class="op">-</span> T_reservoir) <span class="op">/</span> U</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here, <span class="math inline">\(A\)</span> is the cross-sectional area of the steamed zone, <span class="math inline">\(T_s\)</span> is the temperature of the advancing front, <span class="math inline">\(T_{r}\)</span> is the reseroir temperature, <span class="math inline">\(U\)</span> is the velocity of the advancing front, and K is the thermal conductivity of the medium.</p>
+<p>The following function calculates the total heat stored ahead of the front at steady state:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_stored_steady</span>(U, K, T_s, T_r, A)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> K <span class="op">*</span> A <span class="op">*</span> (T_s <span class="op">-</span> T_r) <span class="op">/</span> U</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="total-heat-stored-ahead-of-the-front-at-transient-state" class="level2">
 <h2 class="anchored" data-anchor-id="total-heat-stored-ahead-of-the-front-at-transient-state">Total heat stored ahead of the front at transient state</h2>
-<p>The total heat stored ahead of the front at transient state is given by:</p>
+<p>The total heat stored ahead of the front in transient state can be determined by the following equation:</p>
 <p><span class="math display">\[
-\frac{Q_{c}}{A} = \kappa \frac {(T_{steam} - T_{reservoir})}{U} \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*}
+Q = K \cdot A \cdot \frac {(T_{s} - T_{r})}{U} \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*}
 \]</span></p>
-<p>where <span class="math inline">\(T^{*}\)</span> is the temperature profile for the transient case. By substituting the solution for <span class="math inline">\(T^{*}\)</span>, the heat integral can be computed as follows:</p>
+<p>where <span class="math inline">\(T^{*}\)</span> represents the temperature profile for the transient case. By substituting the solution for <span class="math inline">\(T^{}\)</span>, the heat integral can be computed using the following formula:</p>
 <p><span class="math display">\[
-HI = \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*} = \sqrt \frac{t^{*}}{\pi} e^{-t^{*}/4} + (1 + \frac{t^{*}}{2}) erf(\sqrt \frac {t^{*}}{4}) - \frac{t^{*}}{2}
+\begin{split}
+HI = \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*} = \\
+\sqrt \frac{t^{*}}{\pi} e^{-t^{*}/4} + (1 + \frac{t^{*}}{2}) \cdot erf(\sqrt \frac {t^{*}}{4}) - \frac{t^{*}}{2}
+\end{split}
 \]</span></p>
-<p>Figure below shows the behavior of heat integral with respect to <span class="math inline">\(t^{*}\)</span>. At infinity the value of heat integral is equal to the steady state value (<span class="math inline">\(HI_{\infty} = 1.0\)</span>).</p>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">25</span>, length <span class="op">=</span> <span class="fl">1000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The figure below illustrates the behavior of the heat integral with respect to <span class="math inline">\(t^{*}\)</span>. As <span class="math inline">\(t^{*}\)</span> approaches infinity, the heat integral approaches the steady state value (<span class="math inline">\(HI_{\infty} = 1.0\)</span>).</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">25</span>, length <span class="op">=</span> <span class="fl">1000</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(t_star, <span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="cn">pi</span>) <span class="op">.*</span> <span class="fu">exp</span>.(<span class="op">-</span>t_star <span class="op">/</span> <span class="fl">4</span>) <span class="op">.+</span> (<span class="fl">1</span> <span class="op">.+</span> t_star <span class="op">/</span> <span class="fl">2</span>) <span class="op">.*</span> <span class="fu">erf</span>.(<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="fl">4</span>)) <span class="op">.-</span> t_star <span class="op">/</span> <span class="fl">2</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"Heat Integral"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">xlabel!</span>(L<span class="st">"t^{*}"</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ylabel!</span>(<span class="st">"Heat Integral"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<p><img src="index_files/figure-html/cell-9-output-1.svg" class="img-fluid"></p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(t_star, <span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="cn">pi</span>) <span class="op">.*</span> <span class="fu">exp</span>.(<span class="op">-</span>t_star <span class="op">/</span> <span class="fl">4</span>) <span class="op">.+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>        (<span class="fl">1</span> <span class="op">.+</span> t_star <span class="op">/</span> <span class="fl">2</span>) <span class="op">.*</span> <span class="fu">erf</span>.(<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="fl">4</span>)) <span class="op">.-</span> t_star <span class="op">/</span> <span class="fl">2</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="st">"Heat Integral"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=:</span>bottomright,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    frame<span class="op">=:</span>box)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">xlabel!</span>(L<span class="st">"t^{*}"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ylabel!</span>(<span class="st">"Heat Integral"</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<p><img src="index_files/figure-html/cell-8-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
 <p>The total heat stored ahead of the front at transient state is calculated as follows:</p>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make it broadcastable over t_star</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_flux_stored_transient</span>(U, kappa, T_steam, T_reservoir, t_star)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kappa <span class="op">*</span> (T_steam <span class="op">-</span> T_reservoir) <span class="op">/</span> U <span class="op">*</span> (<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="cn">pi</span>) <span class="op">.*</span> <span class="fu">exp</span>.(<span class="op">-</span>t_star <span class="op">/</span> <span class="fl">4</span>) <span class="op">.+</span> (<span class="fl">1</span> <span class="op">.+</span> t_star <span class="op">/</span> <span class="fl">2</span>) <span class="op">.*</span> <span class="fu">erf</span>.(<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="fl">4</span>)) <span class="op">.-</span> t_star <span class="op">/</span> <span class="fl">2</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make it broadcastable over t_star</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">cumulative_heat_stored_transient</span>(U, K, T_s, T_r, t_star, A)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> K <span class="op">*</span> A <span class="op">*</span> (T_s <span class="op">-</span> T_r) <span class="op">/</span> U <span class="op">*</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        (<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="cn">pi</span>) <span class="op">.*</span> <span class="fu">exp</span>.(<span class="op">-</span>t_star <span class="op">/</span> <span class="fl">4</span>) <span class="op">.+</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        (<span class="fl">1</span> <span class="op">.+</span> t_star <span class="op">/</span> <span class="fl">2</span>) <span class="op">.*</span> <span class="fu">erf</span>.(<span class="fu">sqrt</span>.(t_star <span class="op">/</span> <span class="fl">4</span>)) <span class="op">.-</span> t_star <span class="op">/</span> <span class="fl">2</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
 <p>Following the example in previous post and by assuming that the steam chamber spread rapidly over the reservoir (constant surface area), we calculate the total heat stored ahead of the front at transient state for the following parameters:</p>
 <ul>
-<li><span class="math inline">\(U = 1.5 \mathrm m/365 \quad days\)</span></li>
-<li><span class="math inline">\(\alpha = 8.333e-7 * 86400 \quad \mathrm m^{2}/day\)</span></li>
-<li><span class="math inline">\(\kappa = 1.7 * 86400 \quad \mathrm J/day/m/K\)</span></li>
-<li><span class="math inline">\(T_{steam} = 264 \quad ^{\circ}C\)</span></li>
-<li><span class="math inline">\(T_{reservoir} = 15 \quad ^{\circ}C\)</span></li>
-<li><span class="math inline">\(A = 40000 \quad \mathrm m^{2}\)</span></li>
+<li>Front velocity: <code>U = 1.5 m/365days</code></li>
+<li>Thermal diffusivity: <code>α = 8.333e-7 * 86400 m^2/day$</code></li>
+<li>Thermal conductivity: <code>K = 1.7 W/m/°C</code></li>
+<li>Steam temperature: <code>Ts = 264 °C</code></li>
+<li>Reservoir temperature: <code>Tr = 15 °C</code></li>
+<li>Area: <code>40000 m^2</code></li>
 </ul>
 <p>It is assumed that the steam chamber moves downward at a speed of 1.5 m/year.</p>
 <p>The annual total heat stored ahead of the front at transient state in 10 years is calculated as follows:</p>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span>) <span class="op">*</span> <span class="fl">1.0</span> <span class="co"># days</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>U <span class="op">=</span> <span class="fl">1.5</span> <span class="op">/</span> <span class="fl">365</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>α <span class="op">=</span> <span class="fl">8.333e-7</span> <span class="op">*</span> <span class="fl">86400</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> U <span class="op">*</span> U <span class="op">.*</span> t <span class="op">/</span> α</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>kappa <span class="op">=</span> <span class="fl">1.7</span> <span class="op">*</span> <span class="fl">86400</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>T_steam <span class="op">=</span> <span class="fl">264</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>T_reservoir <span class="op">=</span> <span class="fl">15</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fl">40000</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the cumulative heat stored ahead of the front in overburden in MJoules</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> A <span class="op">*</span> <span class="fu">cumulative_heat_flux_stored_transient</span>(U, kappa, T_steam, T_reservoir, t_star) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># create a DataFrame to store the results</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, Q <span class="op">=</span> Q);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fu">range</span>(<span class="fl">0</span>, <span class="fl">10</span> <span class="op">*</span> <span class="fl">365</span>) <span class="op">*</span> <span class="fl">1.0</span> <span class="co"># days</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>U <span class="op">=</span> <span class="fl">1.5</span> <span class="op">/</span> <span class="fl">365</span> <span class="co"># m/day</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>α <span class="op">=</span> <span class="fl">8.333e-7</span> <span class="op">*</span> <span class="fl">86400</span> <span class="co"># m^2/day</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>t_star <span class="op">=</span> U <span class="op">*</span> U <span class="op">.*</span> t <span class="op">/</span> α</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> <span class="fl">1.7</span> <span class="op">*</span> <span class="fl">86400</span> <span class="co"># J/day/m/K</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>T_s <span class="op">=</span> <span class="fl">264.0</span> <span class="co"># °C</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>T_r <span class="op">=</span> <span class="fl">15.0</span>  <span class="co"># °C</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fl">40000</span> <span class="co"># m^2</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the cumulative heat stored ahead of the front in reservoir in MJoules</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>Q <span class="op">=</span> <span class="fu">cumulative_heat_stored_transient</span>(U, K, T_s, T_r, t_star, A) <span class="op">/</span> <span class="fl">1e6</span> <span class="co"># MJ</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># create a DataFrame to store the results</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> <span class="fu">DataFrame</span>(t <span class="op">=</span> t, year <span class="op">=</span> t <span class="op">/</span> <span class="fl">365.0</span>, Q <span class="op">=</span> Q);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The annual cumulative heat stored ahead of the front at transient state in 10 years is calculated as follows:</p>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_sub <span class="op">=</span> df[df.year <span class="op">.==</span> <span class="fu">round</span>.(df.year, digits <span class="op">=</span> <span class="fl">0</span>), <span class="op">:</span>]</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># create a lag column from Q column</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_sub[!, <span class="op">:</span>Q_lag] <span class="op">=</span> ShiftedArrays.<span class="fu">lag</span>(df_sub.Q, <span class="fl">1</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the increamental heat loss to overburden</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df_sub[!, <span class="op">:</span>Q_incremental] <span class="op">=</span> df_sub.Q <span class="op">-</span> df_sub.Q_lag</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>Q_incremental, xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>, ylabel <span class="op">=</span> <span class="st">"Annual heat stored ahead of the front (MJoules)"</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> <span class="st">"Annual Cumulative Heat Stored Ahead of the Front"</span>, lw <span class="op">=</span> <span class="fl">3</span>, label <span class="op">=</span> L<span class="st">"A = 40000 m^{2}"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<p><img src="index_files/figure-html/cell-12-output-1.svg" class="img-fluid"></p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_sub <span class="op">=</span> df[df.year <span class="op">.==</span> <span class="fu">round</span>.(df.year, digits <span class="op">=</span> <span class="fl">0</span>), <span class="op">:</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># create a lag column from Q column</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df_sub[!, <span class="op">:</span>Q_lag] <span class="op">=</span> ShiftedArrays.<span class="fu">lag</span>(df_sub.Q, <span class="fl">1</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the increamental heat stored ahead of the front</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>df_sub[!, <span class="op">:</span>Q_incremental] <span class="op">=</span> df_sub.Q <span class="op">-</span> df_sub.Q_lag</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="pp">@df</span> df_sub <span class="fu">bar</span>(<span class="op">:</span>year, <span class="op">:</span>Q_incremental, </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    xlabel <span class="op">=</span> <span class="st">"Time (Year)"</span>, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    ylabel <span class="op">=</span> <span class="st">"Annual heat stored ahead of the front (MJoules)"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    title <span class="op">=</span> <span class="st">"Annual Cumulative Heat Stored Ahead of the Front"</span>, </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> L<span class="st">"A = 40000 m^{2}"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="fl">3</span>, </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=:</span>topright,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    legendfontsize <span class="op">=</span> <span class="fl">10</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    frame<span class="op">=:</span>box)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">xgrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ygrid!</span>(<span class="op">:</span>on, <span class="op">:</span>cadetblue, <span class="fl">2</span>, <span class="op">:</span>dashdot, <span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<p><img src="index_files/figure-html/cell-11-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
-</section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>In this post, we showed that the maximum accumulated heat ahead of a moving front is equal to the steady state value. In many practical cases, the energy accumulation ahead of the steam front is close to the steady state value.</p>
+
 
 
 </section>
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-Butler1997" class="csl-entry" role="doc-biblioentry">
+Butler, Roger M. 1997. <em>Thermal Recovery of Oil and Bitumen</em>. 6th ed. GravDrain Inc.
+</div>
+<div id="ref-Carslaw2011" class="csl-entry" role="doc-biblioentry">
+Carslaw, H. S., and J. C. Jaeger. 2011. <em>Conduction of Heat in Solids</em>. 2nd ed. Oxford University Press.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
