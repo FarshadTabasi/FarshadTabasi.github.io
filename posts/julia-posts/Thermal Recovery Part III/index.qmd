@@ -1,0 +1,281 @@
+---
+title: "Thermal Recovery - Part III"
+subtitle: "Heat Conduction Ahead of an Advancing Front"
+author: "Farshad Tabasinejad"
+date: "2023-03-20"
+# date-modified: "2021-03-20"
+bibliography: references.bib
+# csl: nature.csl
+toc: true
+draft: false
+categories: [julia, thermal recovery, heat conduction, heat loss]
+image: "cumulative_heat_stored.svg"
+execute: 
+  cache: false
+  output: true
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    code-overflow: wrap
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    code-copy: hover
+    highlight: zenburn
+jupyter: julia-1.8
+---
+
+# Disclaimer
+
+This blog post is for educational purposes only. Any commercial use of the information provided in this blog post is prohibited. The author is not responsible for any damage or loss caused by the use of the information provided in this blog post. 
+
+# Introduction
+
+In the previous post, we discussed heat conduction from a stationary hot surface area into the overburden. We then extended the model to a case where the hot source area expanded over time across the overburden surface. In this post, we will further extend the model to include heat conduction ahead of an advancing front moving into the overburden. The problem we aim to solve is a one-dimensional heat conduction model with a moving front. Details of this problem can be found in [@Butler1997]. We will implement the model using Julia.
+
+
+# Heat conduction ahead of an advancing front
+
+In a steam-assisted gravity drainage (SAGD) process, the heated oil and condensate mixture moves downward due to gravity, causing the steam chamber to expand and fill the void space. A fraction of the stored heat in the chamber is transferred ahead of the moving front by conduction into the cold region. This heat transfer ahead of the advancing front can be modeled as a 1D heat conduction problem with a moving front.
+
+To simplify the problem, we can transform the moving boundary problem into a stationary problem by introducing a coordinate transformation. The transformed coordinate system is defined based on the distance from the current location of the moving front. This transformation allows us to treat the problem as stationary by fixing the location of the front. By considering the following transformation, the heat conduction problem with a moving boundary can be transformed into a stationary problem:
+
+$$
+\zeta = x - Ut
+$$
+
+Here, x is the original spatial coordinate, U is the velocity of the moving front (constant), t is time, and $\mathrm{\zeta}$ is the new transformed coordinate.
+
+The given equation, [@Butler1997]:
+
+$$
+\frac {\partial^{2} T^{*}}{\partial \zeta^{2}} + \frac {\partial T^{*}}{\partial \zeta} = \frac {\partial T^{*}}{\partial t^{*}} 
+$$  {#eq-1}
+
+represents the stationary heat conduction problem in a new coordinate system. This equation is dimensionless, which means that all the variables have been scaled to eliminate their physical dimensions. The dimensionless variables are defined as follows:
+
+$$
+\begin{align}
+T^{*} = \frac {T - T_{r}} {T_{s} - T_{r}} \\[10pt]
+\zeta^{*} = \frac {U \zeta} {\alpha} \\[10pt]
+t^{*} = \frac {U^{2}t} {\alpha}
+\end{align}
+$$
+
+Here, $T$ is the temperature, $T_r$ is the initial reservoir temperature, $T_s$ is the temperature at the moving front, $\zeta$ is the original spatial coordinate, $U$ is the velocity of the moving front, $t$ is time, and $\alpha$ is the thermal diffusivity of the medium. By scaling the variables in this way, we eliminate their physical dimensions and make the equation dimensionless. This simplifies the problem and makes it easier to analyze. 
+The boundary conditions are:
+
+$$
+T^{*} = 0 \quad \text{when} \quad t = 0 \quad \text{for all} \quad \zeta^{*}
+$$
+
+$$
+T^{*} = 1 \quad \text{when} \quad \zeta^{*} = 0 \quad \text{and} \quad \mathrm t \gt 0
+$$
+
+The solution to this problem is given by Carslaw and Jaeger [@Carslaw2011] as:
+
+$$
+T^{*} = \frac {1}{2} \left[\text{erfc} \left( \frac {\zeta^{*} + t^{*}}{\sqrt{4 \mathrm t^{*}}} \right) + e^{-\zeta^{*}} \text{erfc} \left( \frac {\zeta^{*} - t^{*}}{\sqrt{4 \mathrm t^{*}}} \right) \right]
+$$
+
+where $\text{erfc()}$ is the complementary error function.
+
+For the steady-state case, (@eq-1) simplifies to:
+
+$$
+\frac {\partial^{2} T^{*}}{\partial \zeta^{2}} + \frac {\partial T^{*}}{\partial \zeta} = 0
+$$  {#eq-2}
+
+The solution to this problem that satisfies the boundary conditions is given as follows:
+
+$$
+T^{*} = e^{-\zeta^{*}}
+$$
+
+We will now implement both solutions using Julia programming language:
+
+```{julia}
+using DataFrames
+using Plots
+using StatsPlots 
+using LaTeXStrings
+using SpecialFunctions
+using ShiftedArrays
+```
+
+
+```{julia}
+function Tstar_transient(zeta_star, t_star)
+    
+    s = sqrt(4.0 * t_star)
+    x1 = (zeta_star + t_star) / s
+    x2 = (zeta_star - t_star) / s
+    y1 = erf.(x1)
+    y2 = erf.(x2)
+    return 0.5 .* (1 .- y1 .+ exp.(-zeta_star) .* (1 .- y2))
+end;
+```
+
+
+
+```{julia}
+function Tstar_steady_state(zeta_star)
+    return exp(-zeta_star)
+end;
+```
+
+The solution is plotted below for different values of $t^{*}$.
+
+```{julia}
+# define range for zeta_star
+zeta_star = range(0, 5, length = 200)
+
+# define time values for t_star
+t_star = [0.1, 0.3, 1.0, 3.0]
+
+# plot Tstar vs zeta_star for different values of t_star
+plot(zeta_star, Tstar_transient.(zeta_star, t_star[1]), 
+    label = "t* = $(t_star[1])", 
+    lw = 3, 
+    legend=:topright,
+    legendfontsize = 10,
+    frame=:box,
+    title = "Conductive temperature profile ahead of an advancing front")
+
+for i in 2:length(t_star)
+    plot!(zeta_star, Tstar_transient.(zeta_star, t_star[i]), 
+          lw = 3, 
+          label = "t* = $(t_star[i])")
+end
+
+# plot the steady state solution
+plot!(zeta_star, Tstar_steady_state.(zeta_star),
+    lw = 3, 
+    label = "steady state")
+xlabel!(L"\zeta^{*}")
+ylabel!(L"T^{*}")
+xgrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+ygrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+```
+
+
+## Total heat stored ahead of the front at steady state
+
+The cumulative heat stored ahead of the advancing front at steady state is given by:
+
+$$
+Q = K \cdot A \cdot \frac {(T_{s} - T_{r})}{U} 
+$$
+
+Here, $A$ is the cross-sectional area of the steamed zone, $T_s$ is the temperature of the advancing front, $T_{r}$ is the reseroir temperature, $U$ is the velocity of the advancing front, and K is the thermal conductivity of the medium.
+
+The following function calculates the total heat stored ahead of the front at steady state:
+
+```{julia}
+function cumulative_heat_stored_steady(U, K, T_s, T_r, A)
+    return K * A * (T_s - T_r) / U
+end;
+```
+
+## Total heat stored ahead of the front at transient state
+
+The total heat stored ahead of the front in transient state can be determined by the following equation:
+
+$$
+Q = K \cdot A \cdot \frac {(T_{s} - T_{r})}{U} \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*}
+$$
+
+where $T^{*}$ represents the temperature profile for the transient case. By substituting the solution for $T^{}$, the heat integral can be computed using the following formula:
+
+
+$$
+\begin{split}
+HI = \int_{0}^{\infty} T^{*} \mathrm d \zeta^{*} = \\
+\sqrt \frac{t^{*}}{\pi} e^{-t^{*}/4} + (1 + \frac{t^{*}}{2}) \cdot erf(\sqrt \frac {t^{*}}{4}) - \frac{t^{*}}{2}
+\end{split}
+$$
+
+The figure below illustrates the behavior of the heat integral with respect to $t^{*}$. As $t^{*}$ approaches infinity, the heat integral approaches the steady state value ($HI_{\infty} = 1.0$).
+
+
+```{julia}
+t_star = range(0, 25, length = 1000);
+```
+  
+```{julia}
+plot(t_star, sqrt.(t_star / pi) .* exp.(-t_star / 4) .+ 
+        (1 .+ t_star / 2) .* erf.(sqrt.(t_star / 4)) .- t_star / 2,
+    label = "Heat Integral",
+    lw = 3, 
+    legend=:bottomright,
+    legendfontsize = 10,
+    frame=:box)
+xlabel!(L"t^{*}")
+ylabel!("Heat Integral")
+xgrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+ygrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+```
+
+The total heat stored ahead of the front at transient state is calculated as follows:
+
+```{julia}
+# make it broadcastable over t_star
+function cumulative_heat_stored_transient(U, K, T_s, T_r, t_star, A)
+
+    return K * A * (T_s - T_r) / U * 
+        (sqrt.(t_star / pi) .* exp.(-t_star / 4) .+ 
+        (1 .+ t_star / 2) .* erf.(sqrt.(t_star / 4)) .- t_star / 2)
+end;
+``` 
+
+## Example
+
+Following the example in previous post and by assuming that the steam chamber spread rapidly over the reservoir (constant surface area), we calculate the total heat stored ahead of the front at transient state for the following parameters:
+
+- Front velocity: `U = 1.5 m/365days`
+- Thermal diffusivity: `α = 8.333e-7 * 86400 m^2/day$`
+- Thermal conductivity: `K = 1.7 W/m/°C`
+- Steam temperature: `Ts = 264 °C`
+- Reservoir temperature: `Tr = 15 °C`
+- Area: `40000 m^2`
+
+It is assumed that the steam chamber moves downward at a speed of 1.5 m/year.
+
+The annual total heat stored ahead of the front at transient state in 10 years is calculated as follows:
+
+```{julia}
+t = range(0, 10 * 365) * 1.0 # days
+U = 1.5 / 365 # m/day
+α = 8.333e-7 * 86400 # m^2/day
+t_star = U * U .* t / α
+K = 1.7 * 86400 # J/day/m/K
+T_s = 264.0 # °C
+T_r = 15.0  # °C
+A = 40000 # m^2
+# calculate the cumulative heat stored ahead of the front in reservoir in MJoules
+Q = cumulative_heat_stored_transient(U, K, T_s, T_r, t_star, A) / 1e6 # MJ
+# create a DataFrame to store the results
+df = DataFrame(t = t, year = t / 365.0, Q = Q);
+```
+
+The annual cumulative heat stored ahead of the front at transient state in 10 years is calculated as follows:
+
+```{julia}
+df_sub = df[df.year .== round.(df.year, digits = 0), :]
+# create a lag column from Q column
+df_sub[!, :Q_lag] = ShiftedArrays.lag(df_sub.Q, 1)
+# calculate the increamental heat stored ahead of the front
+df_sub[!, :Q_incremental] = df_sub.Q - df_sub.Q_lag
+@df df_sub bar(:year, :Q_incremental, 
+    xlabel = "Time (Year)", 
+    ylabel = "Annual heat stored ahead of the front (MJoules)",
+    title = "Annual Cumulative Heat Stored Ahead of the Front", 
+    label = L"A = 40000 m^{2}",
+    lw = 3, 
+    legend=:topright,
+    legendfontsize = 10,
+    frame=:box)
+xgrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+ygrid!(:on, :cadetblue, 2, :dashdot, 0.4)
+```
